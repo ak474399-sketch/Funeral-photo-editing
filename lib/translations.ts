@@ -62,6 +62,27 @@ export type TranslationKeys = {
     date: string;
   };
   footer: { brand: string; tagline: string; terms: string; privacy: string; copyright: string };
+  reviews: { title: string; subtitle: string };
+  featureSection: {
+    badge: string;
+    title: string;
+    portrait: { tag: string; title: string; desc: string; b1: string; b2: string; b3: string };
+    colorize: { tag: string; title: string; desc: string; b1: string; b2: string; b3: string };
+    attire: { tag: string; title: string; desc: string; b1: string; b2: string; b3: string };
+    background: { tag: string; title: string; desc: string; b1: string; b2: string; b3: string };
+  };
+  toolsSection: {
+    title: string;
+    subtitle: string;
+    tools: {
+      portrait: { title: string; desc: string };
+      colorize: { title: string; desc: string };
+      attire: { title: string; desc: string };
+      background: { title: string; desc: string };
+      composite: { title: string; desc: string };
+      poster: { title: string; desc: string };
+    };
+  };
   cookieConsent: { message: string; accept: string; learnMore: string };
   common: { loading: string; error: string; success: string; back: string };
 };
@@ -126,6 +147,27 @@ const en: TranslationKeys = {
     download: "Download",
     type: "Type",
     date: "Date",
+  },
+  reviews: { title: "Trusted by Families Worldwide", subtitle: "Real stories from families who used our memorial photo services" },
+  featureSection: {
+    badge: "How We Help",
+    title: "Professional Memorial Photo Processing",
+    portrait: { tag: "Formal Portrait", title: "Create Dignified Memorial Portraits", desc: "Transform any casual photo into a formal, respectful memorial portrait suitable for funeral services and remembrance.", b1: "Standard portrait ratio with professional composition", b2: "Formal dark attire automatically applied", b3: "Multiple background options (blue, black, white, gray)" },
+    colorize: { tag: "Colorization", title: "Bring Vintage Photos to Life", desc: "Restore natural colors to black & white memorial photographs with AI-powered colorization that respects the original character.", b1: "Realistic skin tones and fabric colors", b2: "Historically accurate color palette", b3: "Preserves the dignity and original texture" },
+    attire: { tag: "Attire Change", title: "Respectful Attire Replacement", desc: "Replace casual clothing with formal attire appropriate for memorial and funeral services.", b1: "Seamless integration with natural lighting", b2: "Dark suits, formal wear options", b3: "Face and expression remain completely untouched" },
+    background: { tag: "Background Edit", title: "Clean, Professional Backgrounds", desc: "Remove distracting backgrounds and replace with solid colors or gradients suitable for formal memorial portraits.", b1: "Clean edges with no artifacts", b2: "Solid colors or soft gradients", b3: "Subject appearance preserved exactly" },
+  },
+  toolsSection: {
+    title: "All Memorial Photo Tools",
+    subtitle: "Select a tool to begin editing your memorial photos",
+    tools: {
+      portrait: { title: "Formal Portrait Generation", desc: "Standard memorial portrait with formal attire and background" },
+      colorize: { title: "B&W Photo Colorization", desc: "Add natural colors to black & white photographs" },
+      attire: { title: "Attire Replacement", desc: "Replace clothing with formal funeral attire" },
+      background: { title: "Background Editing", desc: "Remove or replace backgrounds with solid colors" },
+      composite: { title: "Family Composite Portrait", desc: "Combine multiple photos into one family portrait" },
+      poster: { title: "Memorial Poster Design", desc: "Create dignified memorial posters with custom text" },
+    },
   },
   footer: { brand: "Funeral Photo Editing", tagline: "Dignified memorial photo services powered by AI", terms: "Terms of Service", privacy: "Privacy Policy", copyright: "© 2026 Funeral Photo Editing. All rights reserved." },
   cookieConsent: { message: "We use cookies to improve your experience.", accept: "Accept", learnMore: "Learn More" },
@@ -193,6 +235,27 @@ const ja: TranslationKeys = {
     type: "タイプ",
     date: "日付",
   },
+  reviews: { title: "世界中のご家族から信頼されています", subtitle: "当サービスをご利用いただいたご家族の声" },
+  featureSection: {
+    badge: "サービス内容",
+    title: "プロフェッショナルな遺影写真加工",
+    portrait: { tag: "正装遺影", title: "格式ある遺影ポートレートの作成", desc: "普段の写真から、葬儀にふさわしいフォーマルで敬意に満ちた遺影ポートレートを作成します。", b1: "プロ仕様の構図で標準的なポートレート比率", b2: "正式なダーク系の服装を自動適用", b3: "複数の背景オプション（青・黒・白・グレー）" },
+    colorize: { tag: "カラー化", title: "ヴィンテージ写真に色彩を", desc: "AIカラー化技術で白黒の遺影写真に自然な色彩を加え、元の雰囲気を尊重しながら蘇らせます。", b1: "自然な肌の色と衣服の色彩", b2: "時代に即した正確なカラーパレット", b3: "元のテクスチャーと品格を保持" },
+    attire: { tag: "服装変更", title: "敬意ある服装への変更", desc: "カジュアルな服装を、葬儀やメモリアルサービスにふさわしいフォーマルな装いに変更します。", b1: "自然な照明との完璧な統合", b2: "ダークスーツ、フォーマルウェアの選択肢", b3: "顔と表情は完全に変更なし" },
+    background: { tag: "背景編集", title: "きれいでプロフェッショナルな背景", desc: "気が散る背景を除去し、フォーマルな遺影にふさわしい単色やグラデーションに置き換えます。", b1: "アーティファクトのないきれいなエッジ", b2: "単色またはソフトグラデーション", b3: "被写体の外観をそのまま保持" },
+  },
+  toolsSection: {
+    title: "遺影写真ツール一覧",
+    subtitle: "ツールを選んで遺影写真の編集を始めましょう",
+    tools: {
+      portrait: { title: "正装遺影生成", desc: "フォーマルな服装と背景の標準遺影" },
+      colorize: { title: "白黒写真カラー化", desc: "白黒写真に自然な色を追加" },
+      attire: { title: "服装変更", desc: "葬儀用フォーマル服装に変更" },
+      background: { title: "背景編集", desc: "背景の除去・単色への置換" },
+      composite: { title: "家族合成写真", desc: "複数写真を一枚の家族写真に" },
+      poster: { title: "追悼ポスターデザイン", desc: "テキスト付きの格式あるポスター" },
+    },
+  },
   footer: { brand: "遺影写真編集", tagline: "AIによる尊厳ある遺影写真サービス", terms: "利用規約", privacy: "プライバシーポリシー", copyright: "© 2026 Funeral Photo Editing. All rights reserved." },
   cookieConsent: { message: "当サイトではCookieを使用しています。", accept: "同意する", learnMore: "詳細" },
   common: { loading: "読み込み中…", error: "エラーが発生しました。", success: "成功！", back: "戻る" },
@@ -258,6 +321,27 @@ const zhTW: TranslationKeys = {
     download: "下載",
     type: "類型",
     date: "日期",
+  },
+  reviews: { title: "深受全球家庭信賴", subtitle: "使用過我們遺照服務的真實家庭故事" },
+  featureSection: {
+    badge: "服務內容",
+    title: "專業遺照處理服務",
+    portrait: { tag: "正裝遺照", title: "製作莊嚴的紀念肖像", desc: "將任何日常照片轉化為正式、莊重的遺照肖像，適用於葬禮和紀念場合。", b1: "標準肖像比例，專業構圖", b2: "自動搭配正式深色服裝", b3: "多種背景選項（藍、黑、白、灰）" },
+    colorize: { tag: "照片上色", title: "為老照片重現色彩", desc: "運用AI上色技術為黑白遺照添加自然色彩，同時尊重原作的歷史感。", b1: "自然的膚色與服裝色彩", b2: "符合時代的精確色彩", b3: "保留原有質感與莊重感" },
+    attire: { tag: "更換服裝", title: "莊重的服裝替換", desc: "將休閒服裝替換為適合紀念和葬禮場合的正式服裝。", b1: "與自然光線完美融合", b2: "深色西裝、正裝選項", b3: "面容和表情完全不變" },
+    background: { tag: "背景編輯", title: "乾淨專業的背景", desc: "移除雜亂背景，替換為適合正式遺照的純色或漸層背景。", b1: "邊緣乾淨無瑕疵", b2: "純色或柔和漸層", b3: "完整保留主體外觀" },
+  },
+  toolsSection: {
+    title: "所有遺照工具",
+    subtitle: "選擇工具開始編輯您的遺照",
+    tools: {
+      portrait: { title: "正裝遺照生成", desc: "搭配正式服裝和背景的標準遺照" },
+      colorize: { title: "黑白照片上色", desc: "為黑白照片添加自然色彩" },
+      attire: { title: "服裝替換", desc: "替換為葬禮正式服裝" },
+      background: { title: "背景編輯", desc: "移除或替換為純色背景" },
+      composite: { title: "家族合照合成", desc: "多張照片合成一張家族照" },
+      poster: { title: "追思海報設計", desc: "製作帶自訂文字的莊嚴海報" },
+    },
   },
   footer: { brand: "遺照編輯", tagline: "AI 驅動的莊嚴遺照服務", terms: "服務條款", privacy: "隱私政策", copyright: "© 2026 Funeral Photo Editing. All rights reserved." },
   cookieConsent: { message: "我們使用 Cookie 來改善您的體驗。", accept: "接受", learnMore: "了解更多" },

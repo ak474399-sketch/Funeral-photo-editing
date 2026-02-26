@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { useLocale } from "@/components/shared/locale-provider";
 import {
@@ -13,6 +14,10 @@ import {
   ArrowRight,
   Check,
 } from "lucide-react";
+
+const FeatureSection = dynamic(() => import("@/components/shared/feature-section"), { ssr: false });
+const ReviewsCarousel = dynamic(() => import("@/components/shared/reviews-carousel").then((m) => ({ default: m.ReviewsCarousel })), { ssr: false });
+const ToolsSection = dynamic(() => import("@/components/shared/tools-section").then((m) => ({ default: m.ToolsSection })), { ssr: false });
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -95,6 +100,15 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Feature Before/After Section */}
+      <FeatureSection />
+
+      {/* Tools Grid */}
+      <ToolsSection />
+
+      {/* Reviews */}
+      <ReviewsCarousel />
 
       {/* Pricing Preview */}
       <section className="py-20 sm:py-28">
