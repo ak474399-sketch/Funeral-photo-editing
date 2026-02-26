@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0a0a0a;
+  --fg: #fafafa;
+  --muted: #737373;
+  --border: #262626;
+  --gold: #9c8550;
+}
+
+html {
+  @apply antialiased scroll-smooth;
+}
+
+body {
+  @apply bg-slate-950 text-slate-200 min-h-screen;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+@media (min-width: 640px) {
+  body {
+    font-size: 18px;
+  }
+}
+
+::selection {
+  background-color: rgba(156, 133, 80, 0.3);
+}
+
+input[type="range"] {
+  accent-color: var(--gold);
+}
