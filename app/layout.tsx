@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Noto_Serif_JP, Inter } from "next/font/google";
+import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
@@ -7,11 +7,10 @@ import { AuthProvider } from "@/components/shared/auth-provider";
 import { LocaleProvider } from "@/components/shared/locale-provider";
 import { CookieConsentBar } from "@/components/shared/cookie-consent-bar";
 
-const notoSerif = Noto_Serif_JP({
+const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-serif",
   display: "swap",
-  weight: ["400", "700"],
 });
 
 const inter = Inter({
@@ -51,7 +50,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${notoSerif.variable} ${inter.variable} font-sans min-h-screen flex flex-col`}>
+      <body className={`${playfair.variable} ${inter.variable} font-sans min-h-screen flex flex-col`}>
         <AuthProvider>
           <LocaleProvider>
             <Navbar />

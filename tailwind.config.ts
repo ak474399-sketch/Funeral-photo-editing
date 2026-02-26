@@ -28,11 +28,21 @@ const config: Config = {
         },
       },
       fontFamily: {
-        serif: ["var(--font-serif)", "Noto Serif JP", "Georgia", "serif"],
+        serif: ["var(--font-serif)", "Playfair Display", "Georgia", "serif"],
         sans: ["var(--font-sans)", "Inter", "system-ui", "sans-serif"],
       },
       fontSize: {
         body: ["1.125rem", { lineHeight: "1.75" }],
+      },
+      animation: {
+        "candle-glow": "candle-glow 3s ease-in-out infinite",
+        "candle-glow-slow": "candle-glow 5s ease-in-out infinite",
+      },
+      keyframes: {
+        "candle-glow": {
+          "0%, 100%": { opacity: "0.4", transform: "scale(1)" },
+          "50%": { opacity: "0.8", transform: "scale(1.05)" },
+        },
       },
     },
   },

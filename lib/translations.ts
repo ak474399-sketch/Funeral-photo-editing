@@ -4,7 +4,7 @@ export type TranslationKeys = {
   nav: { home: string; edit: string; pricing: string; gallery: string; signIn: string; signOut: string };
   login: { welcomeToBrand: string; continueWithGoogle: string; redirecting: string; pleaseComplete: string; agreeTerms: string; and: string; terms: string; privacyPolicy: string };
   home: {
-    hero: { title: string; subtitle: string; cta: string };
+    hero: { badge: string; title: string; subtitle: string; cta: string; uploadTitle: string; uploadHint: string; privacyNote: string };
     features: { title: string; subtitle: string };
     feature: {
       portrait: { title: string; desc: string };
@@ -91,18 +91,18 @@ const en: TranslationKeys = {
   nav: { home: "Home", edit: "Editor", pricing: "Pricing", gallery: "My Gallery", signIn: "Sign In", signOut: "Sign Out" },
   login: { welcomeToBrand: "Welcome to Funeral Photo Editing", continueWithGoogle: "Continue with Google", redirecting: "Redirecting…", pleaseComplete: "Please complete sign-in in the popup.", agreeTerms: "By continuing, you agree to our ", and: " and ", terms: "Terms of Service", privacyPolicy: "Privacy Policy" },
   home: {
-    hero: { title: "Honor Their Memory with Dignity", subtitle: "Professional AI-powered memorial photo editing — create formal portraits, colorize vintage photos, and generate memorial posters with the respect they deserve.", cta: "Start Editing" },
-    features: { title: "Complete Memorial Photo Services", subtitle: "Everything you need to prepare dignified memorial photographs" },
+    hero: { badge: "Honoring Heritage, Preserving Dignity", title: "Dignified Memories,\nBeautifully Restored", subtitle: "Give their legacy the reverence it deserves — transform cherished photos into lasting, honorable memorial portraits.", cta: "Begin Honoring Their Memory", uploadTitle: "Upload a Cherished Photo", uploadHint: "Drag & drop or click — JPG, PNG up to 10 MB. Your memories stay private.", privacyNote: "Photos are never stored or shared" },
+    features: { title: "A Lasting Tribute, Thoughtfully Crafted", subtitle: "Every tool designed to honor heritage and preserve what matters most" },
     feature: {
-      portrait: { title: "Formal Portrait", desc: "Generate standard memorial portraits with formal attire and professional backgrounds" },
-      colorize: { title: "Photo Colorization", desc: "Bring vintage black & white memorial photos to life with natural colors" },
-      attire: { title: "Attire Replacement", desc: "Replace clothing with formal black suits or traditional attire" },
-      background: { title: "Background Editing", desc: "Remove or replace backgrounds with solid colors or gradient effects" },
-      composite: { title: "Family Composite", desc: "Combine multiple photos into a single dignified family portrait" },
-      poster: { title: "Memorial Poster", desc: "Create beautiful memorial posters with customizable text and layouts" },
+      portrait: { title: "Dignified Portrait", desc: "A formal, reverent memorial portrait — honoring them as they deserve to be remembered" },
+      colorize: { title: "Heritage in Color", desc: "Breathe warmth and life back into treasured black & white family heirlooms" },
+      attire: { title: "Graceful Attire", desc: "Dress them in respectful formal wear befitting the solemnity of remembrance" },
+      background: { title: "Serene Backdrop", desc: "A clean, peaceful background that keeps all focus on the person you love" },
+      composite: { title: "Family Together", desc: "Unite loved ones in a single, timeless family portrait — together once more" },
+      poster: { title: "Memorial Keepsake", desc: "A beautiful commemorative poster to share and preserve their lasting memory" },
     },
-    pricing: { title: "Simple, Transparent Pricing", subtitle: "One-time purchase — no subscriptions, no hidden fees" },
-    cta: { title: "Ready to Create a Lasting Tribute?", subtitle: "Upload a photo and let our AI help you create the perfect memorial image.", button: "Get Started Now" },
+    pricing: { title: "Transparent & Compassionate Pricing", subtitle: "One heartfelt purchase — no subscriptions, no hidden fees" },
+    cta: { title: "Ready to Create a Lasting Tribute?", subtitle: "Honor their memory with a portrait that speaks of love, dignity, and remembrance.", button: "Begin Their Tribute" },
   },
   pricing: {
     title: "Choose Your Plan",
@@ -178,18 +178,18 @@ const ja: TranslationKeys = {
   nav: { home: "ホーム", edit: "エディタ", pricing: "料金", gallery: "マイギャラリー", signIn: "ログイン", signOut: "ログアウト" },
   login: { welcomeToBrand: "遺影写真編集へようこそ", continueWithGoogle: "Googleでログイン", redirecting: "リダイレクト中…", pleaseComplete: "ポップアップでログインを完了してください。", agreeTerms: "続行することで、", and: "および", terms: "利用規約", privacyPolicy: "プライバシーポリシー" },
   home: {
-    hero: { title: "尊厳をもって故人を偲ぶ", subtitle: "AIによるプロフェッショナルな遺影写真編集——正装ポートレートの作成、ヴィンテージ写真のカラー化、追悼ポスターの生成を、敬意を込めて。", cta: "編集を始める" },
-    features: { title: "遺影写真の総合サービス", subtitle: "尊厳ある遺影写真の準備に必要なすべて" },
+    hero: { badge: "遺産を敬い、尊厳を守る", title: "尊厳ある思い出を、\n美しく蘇らせる", subtitle: "大切な方の遺産にふさわしい敬意を——愛する写真を永遠に残る、格式ある遺影に。", cta: "追悼の想いを形に", uploadTitle: "大切なお写真をアップロード", uploadHint: "ドラッグ＆ドロップまたはクリック — JPG、PNG（最大10MB）", privacyNote: "お写真は保存・共有されません" },
+    features: { title: "心を込めた、永遠の追悼", subtitle: "すべての機能が、遺産への敬意と大切なものの保存のために設計されています" },
     feature: {
-      portrait: { title: "正装遺影", desc: "正式な服装とプロフェッショナルな背景で標準的な遺影を生成" },
-      colorize: { title: "写真カラー化", desc: "白黒の遺影写真を自然な色彩で蘇らせます" },
-      attire: { title: "服装変更", desc: "衣服を黒のフォーマルスーツや伝統的な正装に変更" },
-      background: { title: "背景編集", desc: "背景の除去や単色・グラデーションへの置き換え" },
-      composite: { title: "家族合成写真", desc: "複数の写真を一枚の格式ある家族写真に合成" },
-      poster: { title: "追悼ポスター", desc: "カスタマイズ可能なテキストとレイアウトで美しい追悼ポスターを作成" },
+      portrait: { title: "格式ある遺影", desc: "故人にふさわしい、敬意に満ちたフォーマルな遺影ポートレート" },
+      colorize: { title: "色彩の蘇り", desc: "大切な白黒の家族の宝物に、温かみと生命の息吹を" },
+      attire: { title: "品格ある装い", desc: "追悼の厳粛さにふさわしい、敬意ある正装へ" },
+      background: { title: "静謐な背景", desc: "愛する方にすべての焦点を当てる、清らかで穏やかな背景" },
+      composite: { title: "家族の再会", desc: "愛する方々をひとつの永遠の家族写真に——もう一度、共に" },
+      poster: { title: "追悼の記念品", desc: "その永遠の思い出を分かち合い、守るための美しい記念ポスター" },
     },
-    pricing: { title: "シンプルで明確な料金", subtitle: "一回限りの購入——サブスクリプション不要、隠れた費用なし" },
-    cta: { title: "永遠の追悼を作成する準備はできましたか？", subtitle: "写真をアップロードして、AIが完璧な遺影画像の作成をお手伝いします。", button: "今すぐ始める" },
+    pricing: { title: "透明で心のこもった料金", subtitle: "一回限りの購入——サブスク不要、隠れた費用なし" },
+    cta: { title: "永遠の追悼を作成する準備はできましたか？", subtitle: "愛と尊厳と追憶を伝える遺影で、その思い出を称えましょう。", button: "追悼を始める" },
   },
   pricing: {
     title: "プランを選択",
@@ -265,18 +265,18 @@ const zhTW: TranslationKeys = {
   nav: { home: "首頁", edit: "編輯器", pricing: "方案", gallery: "我的相簿", signIn: "登入", signOut: "登出" },
   login: { welcomeToBrand: "歡迎使用遺照編輯", continueWithGoogle: "使用 Google 登入", redirecting: "跳轉中…", pleaseComplete: "請在彈出視窗中完成登入。", agreeTerms: "繼續即表示您同意我們的", and: "和", terms: "服務條款", privacyPolicy: "隱私政策" },
   home: {
-    hero: { title: "以尊嚴紀念逝者", subtitle: "AI 驅動的專業遺照編輯——製作正裝肖像、為老照片上色、生成追思海報，以最崇敬的方式紀念故人。", cta: "開始編輯" },
-    features: { title: "全方位遺照服務", subtitle: "準備莊嚴遺照所需的一切功能" },
+    hero: { badge: "敬奉傳承，守護尊嚴", title: "有尊嚴的回憶，\n美麗地修復", subtitle: "賦予摯愛的遺產應有的敬意——將珍藏的照片化為永恆、莊嚴的紀念肖像。", cta: "開始追思紀念", uploadTitle: "上傳一張珍貴照片", uploadHint: "拖放或點擊上傳 — JPG、PNG（最大 10MB）", privacyNote: "照片不會被儲存或分享" },
+    features: { title: "用心打造的永恆追思", subtitle: "每一項功能都為敬奉傳承、守護珍貴記憶而設計" },
     feature: {
-      portrait: { title: "正裝遺照", desc: "生成標準的正裝遺照，搭配專業背景" },
-      colorize: { title: "照片上色", desc: "為黑白遺照添加自然色彩，重現往日風采" },
-      attire: { title: "更換服裝", desc: "將服裝替換為黑色正裝或傳統禮服" },
-      background: { title: "背景編輯", desc: "去除或替換背景為純色或漸變效果" },
-      composite: { title: "家族合照", desc: "將多張照片合成為一張莊嚴的家族合照" },
-      poster: { title: "追思海報", desc: "製作精美的追思海報，支援自訂文字和版面" },
+      portrait: { title: "莊嚴遺照", desc: "為故人製作一張值得紀念、充滿敬意的正式遺照" },
+      colorize: { title: "色彩重現", desc: "為珍貴的黑白家族老照片注入溫暖與生命力" },
+      attire: { title: "端莊服裝", desc: "換上莊重的正式服裝，以配得上追思的莊嚴" },
+      background: { title: "寧靜背景", desc: "乾淨、平靜的背景，讓所有目光聚焦於您所愛之人" },
+      composite: { title: "家人團聚", desc: "將摯愛的家人合為一張永恆的家族合照——再次團聚" },
+      poster: { title: "追思紀念品", desc: "一張美麗的紀念海報，用以分享和守護永恆的記憶" },
     },
-    pricing: { title: "簡單透明的定價", subtitle: "一次性購買——無訂閱，無隱藏費用" },
-    cta: { title: "準備好製作永恆的紀念了嗎？", subtitle: "上傳照片，讓 AI 協助您製作完美的遺照。", button: "立即開始" },
+    pricing: { title: "透明而溫暖的定價", subtitle: "一次性購買——無訂閱，無隱藏費用" },
+    cta: { title: "準備好製作永恆的紀念了嗎？", subtitle: "用一張承載著愛、尊嚴與追憶的遺照，來紀念他們的一生。", button: "開始追思" },
   },
   pricing: {
     title: "選擇方案",

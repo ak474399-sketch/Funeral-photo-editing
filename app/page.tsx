@@ -1,9 +1,11 @@
 "use client";
 
+import { useRef, useCallback } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { useLocale } from "@/components/shared/locale-provider";
+import { LilyLeft, LilyRight, LilyDivider } from "@/components/shared/lily-decoration";
 import {
   User,
   Palette,
@@ -13,6 +15,7 @@ import {
   FileImage,
   ArrowRight,
   Check,
+  Upload,
 } from "lucide-react";
 
 const FeatureSection = dynamic(() => import("@/components/shared/feature-section"), { ssr: false });
@@ -39,85 +42,189 @@ const features = [
 
 export default function HomePage() {
   const { t } = useLocale();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      window.location.href = "/edit";
+    }
+  }, []);
 
   return (
     <div className="overflow-hidden">
-      {/* Hero */}
-      <section className="relative py-20 sm:py-32 lg:py-40">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900/50 to-slate-950" />
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
-        <div className="container relative mx-auto px-4 sm:px-6 text-center">
-          <motion.div initial="hidden" animate="visible" variants={stagger}>
-            <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/20 text-gold text-sm mb-8">
-              <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-              AI-Powered Memorial Photo Services
+      {/* ═══════════ HERO ═══════════ */}
+      <section className="relative py-16 sm:py-24 lg:py-32 overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900/40 to-slate-950" />
+
+        {/* Candlelight glow orbs */}
+        <div className="candle-orb candle-orb-gold animate-candle-glow w-[300px] h-[300px] -top-20 left-1/4 sm:w-[400px] sm:h-[400px]" />
+        <div className="candle-orb candle-orb-warm animate-candle-glow-slow w-[250px] h-[250px] top-20 right-1/4 sm:w-[350px] sm:h-[350px]" />
+        <div className="candle-orb candle-orb-gold animate-candle-glow-slow w-[200px] h-[200px] bottom-10 left-1/3" />
+
+        {/* Lily decorations */}
+        <LilyLeft className="absolute left-2 sm:left-8 top-10 w-16 sm:w-24 text-white/60 hidden md:block" />
+        <LilyRight className="absolute right-2 sm:right-8 top-10 w-16 sm:w-24 text-white/60 hidden md:block" />
+
+        <div className="container relative mx-auto px-4 sm:px-6">
+          <motion.div initial="hidden" animate="visible" variants={stagger} className="text-center">
+            {/* Badge — emotion first */}
+            <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gold/8 border border-gold/15 text-gold/80 text-sm mb-8">
+              <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
+              {t("home.hero.badge")}
             </motion.div>
-            <motion.h1 variants={fadeUp} className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight max-w-4xl mx-auto">
+
+            {/* Main headline — emotional, no tech jargon */}
+            <motion.h1 variants={fadeUp} className="font-serif text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-[1.1] max-w-5xl mx-auto tracking-tight">
               {t("home.hero.title")}
             </motion.h1>
-            <motion.p variants={fadeUp} className="mt-6 text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
+
+            <motion.div variants={fadeUp}>
+              <LilyDivider className="my-6 sm:my-8" />
+            </motion.div>
+
+            <motion.p variants={fadeUp} className="text-base sm:text-lg lg:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
               {t("home.hero.subtitle")}
             </motion.p>
-            <motion.div variants={fadeUp} className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/edit" className="inline-flex items-center gap-2 bg-gold hover:bg-gold-light text-slate-950 font-semibold px-8 py-4 rounded-xl transition-all hover:shadow-lg hover:shadow-gold/20 text-lg">
+          </motion.div>
+
+          {/* ── Restoration Module: Video left / Upload right ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+            className="mt-12 sm:mt-16 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto"
+          >
+            {/* Video side */}
+            <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/60 aspect-[4/3] lg:aspect-auto group">
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                poster="/images/hero-poster.png"
+                className="w-full h-full object-cover"
+              >
+                <source src="/videos/demo.mp4" type="video/mp4" />
+              </video>
+              {/* Warm overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
+              {/* Corner lilies on video */}
+              <div className="absolute bottom-4 left-4 opacity-30">
+                <svg viewBox="0 0 50 50" className="w-8 h-8 text-white" fill="none" aria-hidden="true">
+                  <path d="M25 45 C25 35, 23 25, 24 15 C24.5 10, 25.5 10, 26 15 C27 25, 25 35, 25 45Z" fill="currentColor" opacity="0.5" />
+                  <path d="M24 15 C18 10, 10 9, 7 5 C10 7, 18 8, 24 15Z" fill="currentColor" opacity="0.4" />
+                  <path d="M26 15 C32 10, 40 9, 43 5 C40 7, 32 8, 26 15Z" fill="currentColor" opacity="0.4" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Upload side */}
+            <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-700/80 bg-slate-900/30 p-8 sm:p-10 hover:border-gold/30 hover:bg-slate-900/50 transition-all duration-500 cursor-pointer group"
+              onClick={handleUploadClick}
+            >
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+
+              {/* Candle glow behind upload icon */}
+              <div className="relative mb-6">
+                <div className="absolute inset-0 w-24 h-24 -translate-x-2 -translate-y-2 rounded-full bg-gold/10 animate-candle-glow blur-xl" />
+                <div className="relative w-20 h-20 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center group-hover:bg-gold/15 transition-colors">
+                  <Upload className="w-9 h-9 text-gold" />
+                </div>
+              </div>
+
+              <h3 className="font-serif text-xl sm:text-2xl font-bold text-white mb-2 text-center">
+                {t("home.hero.uploadTitle")}
+              </h3>
+              <p className="text-sm text-slate-500 mb-6 text-center max-w-xs">
+                {t("home.hero.uploadHint")}
+              </p>
+
+              <button type="button" className="inline-flex items-center gap-2 bg-gold hover:bg-gold-light text-slate-950 font-semibold px-8 py-3.5 rounded-xl transition-all hover:shadow-lg hover:shadow-gold/20">
                 {t("home.hero.cta")}
                 <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link href="/pricing" className="inline-flex items-center gap-2 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white px-8 py-4 rounded-xl transition-colors text-lg">
-                {t("home.pricing.title")}
-              </Link>
-            </motion.div>
+              </button>
+
+              <p className="mt-4 text-xs text-slate-600 flex items-center gap-1.5">
+                <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="currentColor" aria-hidden="true">
+                  <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm-.75 3.75a.75.75 0 011.5 0v4a.75.75 0 01-1.5 0v-4zm.75 7a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+                </svg>
+                {t("home.hero.privacyNote")}
+              </p>
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-20 sm:py-28 bg-slate-900/50">
+      {/* ═══════════ FEATURES GRID ═══════════ */}
+      <section className="relative py-20 sm:py-28 bg-slate-900/50">
+        {/* Subtle lily corners */}
+        <LilyLeft className="absolute left-0 bottom-0 w-20 text-slate-400/20 hidden lg:block" />
+        <LilyRight className="absolute right-0 bottom-0 w-20 text-slate-400/20 hidden lg:block" />
+
         <div className="container mx-auto px-4 sm:px-6">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger} className="text-center mb-16">
             <motion.h2 variants={fadeUp} className="font-serif text-3xl sm:text-4xl font-bold text-white">
               {t("home.features.title")}
             </motion.h2>
-            <motion.p variants={fadeUp} className="mt-4 text-slate-400 text-lg max-w-xl mx-auto">
+            <motion.div variants={fadeUp}>
+              <LilyDivider className="mt-4 mb-3" />
+            </motion.div>
+            <motion.p variants={fadeUp} className="text-slate-400 text-lg max-w-xl mx-auto">
               {t("home.features.subtitle")}
             </motion.p>
           </motion.div>
 
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map(({ key, icon: Icon }) => (
-              <motion.div key={key} variants={fadeUp} className="group p-6 sm:p-8 rounded-2xl border border-slate-800 bg-slate-900/60 hover:border-gold/30 hover:bg-slate-900 transition-all duration-300">
-                <div className="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-5 group-hover:bg-gold/20 transition-colors">
-                  <Icon className="w-6 h-6 text-gold" />
+              <motion.div key={key} variants={fadeUp} className="group p-6 sm:p-8 rounded-2xl border border-slate-800 bg-slate-900/60 hover:border-gold/30 hover:bg-slate-900 transition-all duration-300 relative overflow-hidden">
+                {/* Subtle glow on hover */}
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-gold/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative">
+                  <div className="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-5 group-hover:bg-gold/20 transition-colors">
+                    <Icon className="w-6 h-6 text-gold" />
+                  </div>
+                  <h3 className="font-serif text-xl font-semibold text-white mb-2">
+                    {t(`home.feature.${key}.title`)}
+                  </h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">
+                    {t(`home.feature.${key}.desc`)}
+                  </p>
                 </div>
-                <h3 className="font-serif text-xl font-semibold text-white mb-2">
-                  {t(`home.feature.${key}.title`)}
-                </h3>
-                <p className="text-slate-400 text-sm leading-relaxed">
-                  {t(`home.feature.${key}.desc`)}
-                </p>
               </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* Feature Before/After Section */}
+      {/* ═══════════ FEATURE BEFORE/AFTER ═══════════ */}
       <FeatureSection />
 
-      {/* Tools Grid */}
+      {/* ═══════════ TOOLS GRID ═══════════ */}
       <ToolsSection />
 
-      {/* Reviews */}
+      {/* ═══════════ REVIEWS ═══════════ */}
       <ReviewsCarousel />
 
-      {/* Pricing Preview */}
-      <section className="py-20 sm:py-28">
+      {/* ═══════════ PRICING PREVIEW ═══════════ */}
+      <section className="relative py-20 sm:py-28">
+        <LilyLeft className="absolute left-4 top-20 w-16 text-slate-500/10 hidden lg:block" />
+        <LilyRight className="absolute right-4 top-20 w-16 text-slate-500/10 hidden lg:block" />
+
         <div className="container mx-auto px-4 sm:px-6">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center mb-16">
             <motion.h2 variants={fadeUp} className="font-serif text-3xl sm:text-4xl font-bold text-white">
               {t("home.pricing.title")}
             </motion.h2>
-            <motion.p variants={fadeUp} className="mt-4 text-slate-400 text-lg">
+            <motion.div variants={fadeUp}>
+              <LilyDivider className="mt-4 mb-3" />
+            </motion.div>
+            <motion.p variants={fadeUp} className="text-slate-400 text-lg">
               {t("home.pricing.subtitle")}
             </motion.p>
           </motion.div>
@@ -153,10 +260,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20 sm:py-28 bg-gradient-to-b from-slate-900/50 to-slate-950">
-        <div className="container mx-auto px-4 sm:px-6 text-center">
+      {/* ═══════════ CTA ═══════════ */}
+      <section className="relative py-20 sm:py-28 bg-gradient-to-b from-slate-900/50 to-slate-950 overflow-hidden">
+        {/* Candlelight glow */}
+        <div className="candle-orb candle-orb-gold animate-candle-glow-slow w-[300px] h-[300px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+
+        <div className="container relative mx-auto px-4 sm:px-6 text-center">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
+            <motion.div variants={fadeUp}>
+              <LilyDivider className="mb-8" />
+            </motion.div>
             <motion.h2 variants={fadeUp} className="font-serif text-3xl sm:text-4xl font-bold text-white max-w-2xl mx-auto">
               {t("home.cta.title")}
             </motion.h2>

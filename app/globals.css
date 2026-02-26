@@ -33,3 +33,19 @@ body {
 input[type="range"] {
   accent-color: var(--gold);
 }
+
+/* Candlelight glow orbs */
+.candle-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(60px);
+}
+
+.candle-orb-gold {
+  background: radial-gradient(circle, rgba(156,133,80,0.35) 0%, transparent 70%);
+}
+
+.candle-orb-warm {
+  background: radial-gradient(circle, rgba(196,169,106,0.2) 0%, transparent 70%);
+}
