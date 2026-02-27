@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -22,6 +22,19 @@ type GeneratedAsset = {
 };
 type DownloadPlan = "basic" | "bundle" | "legacy";
 type DownloadMode = "single" | "all" | "zip";
+type PaymentStep = "plan" | "pay" | "success";
+type SurveyData = {
+  name: string;
+  nickname?: string;
+  gender: string;
+  birthDate: string;
+  deathDate: string;
+  job?: string;
+  childrenCount?: string;
+  personality?: string[];
+  hobby?: string[];
+  faith?: string;
+};
 
 const posterStyles = ["庄严黑金", "温暖米白", "典雅灰蓝", "简约黑白", "花束纪念"];
 const obituaryStyles = ["传统讣告", "现代讣告", "温情追思", "宗教纪念", "家族公告"];
@@ -114,6 +127,11 @@ export default function StudioPage() {
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
   const [downloadMode, setDownloadMode] = useState<DownloadMode>("all");
   const [downloadTargetAsset, setDownloadTargetAsset] = useState<GeneratedAsset | null>(null);
+  const [paymentStep, setPaymentStep] = useState<PaymentStep>("plan");
+  const [pendingPlan, setPendingPlan] = useState<DownloadPlan>("legacy");
+  const [isPaying, setIsPaying] = useState(false);
+  const [survey, setSurvey] = useState<SurveyData | null>(null);
+  const [surveyReady, setSurveyReady] = useState(false);
 
   const lifeInputRef = useRef<HTMLInputElement>(null);
   const familyInputRef = useRef<HTMLInputElement>(null);
@@ -126,6 +144,22 @@ export default function StudioPage() {
       family: generatedAssets.filter((a) => a.type === "family"),
     };
   }, [generatedAssets]);
+
+  useEffect(() => {
+    const raw = sessionStorage.getItem("funeral_survey_v1");
+    if (!raw) {
+      window.location.href = "/intake";
+      return;
+    }
+    try {
+      const parsed = JSON.parse(raw) as SurveyData;
+      setSurvey(parsed);
+    } catch {
+      window.location.href = "/intake";
+      return;
+    }
+    setSurveyReady(true);
+  }, []);
 
   const handleLifeUpload = (files: FileList | null) => {
     const file = files?.[0];
@@ -246,6 +280,8 @@ export default function StudioPage() {
   const openDownloadDialog = (mode: DownloadMode, asset?: GeneratedAsset) => {
     setDownloadMode(mode);
     setDownloadTargetAsset(asset ?? null);
+    setPaymentStep("plan");
+    setPendingPlan("legacy");
     setDownloadDialogOpen(true);
   };
 
@@ -305,6 +341,39 @@ export default function StudioPage() {
     URL.revokeObjectURL(url);
   };
 
+  const handleChoosePlanForPayment = (plan: DownloadPlan) => {
+    const allowed = getAllowedTypesByPlan(plan);
+    if (downloadMode === "single" && downloadTargetAsset && !allowed.includes(downloadTargetAsset.type)) {
+      alert("所选套餐不包含该素材类型，请升级套餐后下载。");
+      return;
+    }
+    if (plan === "basic") {
+      const ok = window.confirm("基础套餐仅可下载仪容遗照。是否放弃全家福、讣告和海报下载？");
+      if (!ok) return;
+    }
+    if (plan === "bundle") {
+      const ok = window.confirm("进阶套餐仅可下载遗照、海报与讣告。是否放弃全家福下载？");
+      if (!ok) return;
+    }
+    setPendingPlan(plan);
+    setPaymentStep("pay");
+  };
+
+  const handlePayAndDownload = () => {
+    setIsPaying(true);
+    window.setTimeout(() => {
+      runDownloadByPlan(pendingPlan);
+      setIsPaying(false);
+      setPaymentStep("success");
+    }, 1400);
+  };
+
+  if (!surveyReady) {
+    return (
+      <div className="py-20 text-center text-slate-400">正在加载问卷信息...</div>
+    );
+  }
+
   return (
     <div className="py-10 sm:py-14">
       <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
@@ -312,6 +381,9 @@ export default function StudioPage() {
           <div>
             <p className="text-gold text-sm mb-1">Beta 版本 · 直达素材工作台（无套餐前置步骤）</p>
             <h1 className="font-serif text-2xl sm:text-3xl text-white font-bold">素材上传工作台（按最高级套餐生成）</h1>
+            <p className="text-xs text-slate-400 mt-2">
+              已登记：{survey?.name} {survey?.nickname ? `（${survey.nickname}）` : ""} · {survey?.gender} · {survey?.birthDate} ~ {survey?.deathDate}
+            </p>
           </div>
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-slate-300 hover:text-white border border-slate-700 px-4 py-2 rounded-lg">
             <ArrowLeft className="w-4 h-4" />
@@ -519,6 +591,20 @@ export default function StudioPage() {
                 />
               )}
             </div>
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="rounded-xl border border-slate-700 bg-slate-950/60 p-4">
+                <h3 className="text-sm font-semibold text-white mb-2">葬礼祷文（样式预留）</h3>
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  我们怀着感恩与追思，为 <span className="text-gold">{survey?.name}</span> 献上祷告。愿其平安安息，愿爱与善意继续在家人与后代中传承。
+                </p>
+              </div>
+              <div className="rounded-xl border border-slate-700 bg-slate-950/60 p-4">
+                <h3 className="text-sm font-semibold text-white mb-2">墓志铭（样式预留）</h3>
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  “以温柔和坚韧走完人生旅程，爱仍在家人心中长存。”
+                </p>
+              </div>
+            </div>
           </section>
         )}
       </div>
@@ -536,39 +622,57 @@ export default function StudioPage() {
       {downloadDialogOpen && (
         <div className="fixed inset-0 z-[110] bg-black/70 flex items-center justify-center p-4">
           <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-950 p-5">
-            <h3 className="text-white font-semibold text-lg mb-2">请选择下载套餐</h3>
-            <p className="text-slate-400 text-sm mb-4">
-              按你选择的套餐决定可下载素材范围。
-            </p>
-            <div className="grid grid-cols-1 gap-2">
-              <button
-                onClick={() => {
-                  runDownloadByPlan("basic");
-                  setDownloadDialogOpen(false);
-                }}
-                className="text-left px-4 py-3 rounded-lg border border-slate-700 hover:border-gold/50 text-slate-200"
-              >
-                基础套餐（仅仪容遗照）
-              </button>
-              <button
-                onClick={() => {
-                  runDownloadByPlan("bundle");
-                  setDownloadDialogOpen(false);
-                }}
-                className="text-left px-4 py-3 rounded-lg border border-slate-700 hover:border-gold/50 text-slate-200"
-              >
-                进阶套餐（遗照 + 海报 + 讣告）
-              </button>
-              <button
-                onClick={() => {
-                  runDownloadByPlan("legacy");
-                  setDownloadDialogOpen(false);
-                }}
-                className="text-left px-4 py-3 rounded-lg border border-gold/40 bg-gold/10 text-gold"
-              >
-                传承套餐（全部素材）
-              </button>
-            </div>
+            {paymentStep === "plan" && (
+              <>
+                <h3 className="text-white font-semibold text-lg mb-2">请选择下载套餐</h3>
+                <p className="text-slate-400 text-sm mb-4">按你选择的套餐决定可下载素材范围。下一步将进入付款。</p>
+                <div className="grid grid-cols-1 gap-2">
+                  <button onClick={() => handleChoosePlanForPayment("basic")} className="text-left px-4 py-3 rounded-lg border border-slate-700 hover:border-gold/50 text-slate-200">
+                    基础套餐（仅仪容遗照） · $19.99
+                  </button>
+                  <button onClick={() => handleChoosePlanForPayment("bundle")} className="text-left px-4 py-3 rounded-lg border border-slate-700 hover:border-gold/50 text-slate-200">
+                    进阶套餐（遗照 + 海报 + 讣告） · $49.99
+                  </button>
+                  <button onClick={() => handleChoosePlanForPayment("legacy")} className="text-left px-4 py-3 rounded-lg border border-gold/40 bg-gold/10 text-gold">
+                    传承套餐（全部素材） · $99.99
+                  </button>
+                </div>
+              </>
+            )}
+
+            {paymentStep === "pay" && (
+              <>
+                <h3 className="text-white font-semibold text-lg mb-2">付款确认</h3>
+                <p className="text-slate-400 text-sm mb-4">
+                  你已选择：
+                  <span className="text-gold ml-1">
+                    {pendingPlan === "basic" ? "基础套餐" : pendingPlan === "bundle" ? "进阶套餐" : "传承套餐"}
+                  </span>
+                </p>
+                <button
+                  onClick={handlePayAndDownload}
+                  disabled={isPaying}
+                  className="w-full px-4 py-3 rounded-lg bg-gold hover:bg-gold-light text-slate-950 font-semibold inline-flex items-center justify-center gap-2"
+                >
+                  {isPaying ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                  {isPaying ? "支付处理中..." : "立即付款并下载"}
+                </button>
+              </>
+            )}
+
+            {paymentStep === "success" && (
+              <>
+                <h3 className="text-white font-semibold text-lg mb-2">下载成功</h3>
+                <p className="text-slate-300 text-sm mb-4">付款成功，已按所选套餐触发下载。</p>
+                <button
+                  onClick={() => setDownloadDialogOpen(false)}
+                  className="w-full px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-100"
+                >
+                  完成
+                </button>
+              </>
+            )}
+
             <button
               onClick={() => setDownloadDialogOpen(false)}
               className="mt-4 w-full px-4 py-2 rounded-lg border border-slate-700 text-slate-300 hover:text-white"

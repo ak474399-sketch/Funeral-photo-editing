@@ -48,7 +48,7 @@ export default function HomePage() {
   const { t } = useLocale();
 
   const handleUploadClick = useCallback(() => {
-    window.location.href = "/studio";
+    window.location.href = "/intake";
   }, []);
 
   return (
@@ -309,7 +309,7 @@ export default function HomePage() {
               {t("home.cta.subtitle")}
             </motion.p>
             <motion.div variants={fadeUp} className="mt-8">
-              <Link href="/studio" className="inline-flex items-center gap-2 bg-gold hover:bg-gold-light text-slate-950 font-semibold px-8 py-4 rounded-xl transition-all hover:shadow-lg hover:shadow-gold/20 text-lg">
+              <Link href="/intake" className="inline-flex items-center gap-2 bg-gold hover:bg-gold-light text-slate-950 font-semibold px-8 py-4 rounded-xl transition-all hover:shadow-lg hover:shadow-gold/20 text-lg">
                 {t("home.cta.button")}
                 <ArrowRight className="w-5 h-5" />
               </Link>
