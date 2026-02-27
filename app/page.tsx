@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback } from "react";
+import { useCallback } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
@@ -46,17 +46,9 @@ const features = [
 
 export default function HomePage() {
   const { t } = useLocale();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUploadClick = useCallback(() => {
-    fileInputRef.current?.click();
-  }, []);
-
-  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      window.location.href = "/edit";
-    }
+    window.location.href = "/pricing";
   }, []);
 
   return (
@@ -132,8 +124,6 @@ export default function HomePage() {
             <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-700/80 bg-slate-900/30 p-8 sm:p-10 hover:border-gold/30 hover:bg-slate-900/50 transition-all duration-500 cursor-pointer group"
               onClick={handleUploadClick}
             >
-              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-
               {/* Candle glow behind upload icon */}
               <div className="relative mb-6">
                 <div className="absolute inset-0 w-24 h-24 -translate-x-2 -translate-y-2 rounded-full bg-gold/10 animate-candle-glow blur-xl" />
@@ -319,7 +309,7 @@ export default function HomePage() {
               {t("home.cta.subtitle")}
             </motion.p>
             <motion.div variants={fadeUp} className="mt-8">
-              <Link href="/edit" className="inline-flex items-center gap-2 bg-gold hover:bg-gold-light text-slate-950 font-semibold px-8 py-4 rounded-xl transition-all hover:shadow-lg hover:shadow-gold/20 text-lg">
+              <Link href="/pricing" className="inline-flex items-center gap-2 bg-gold hover:bg-gold-light text-slate-950 font-semibold px-8 py-4 rounded-xl transition-all hover:shadow-lg hover:shadow-gold/20 text-lg">
                 {t("home.cta.button")}
                 <ArrowRight className="w-5 h-5" />
               </Link>

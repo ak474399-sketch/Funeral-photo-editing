@@ -1,12 +1,9 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { Check, ArrowRight, Shield, Star, Crown } from "lucide-react";
 import { useLocale } from "@/components/shared/locale-provider";
-import { POLAR_PRODUCT_IDS, type PlanTier } from "@/lib/polar";
-import { getCheckoutUrl } from "@/lib/polar";
-import { useState } from "react";
-import { LoginModal } from "@/components/shared/login-modal";
+import type { PlanTier } from "@/lib/polar";
 import { LilyDivider } from "@/components/shared/lily-decoration";
 
 type PlanConfig = {
@@ -24,20 +21,10 @@ const plans: PlanConfig[] = [
 
 export default function PricingPage() {
   const { t } = useLocale();
-  const { data: session } = useSession();
-  const [loginOpen, setLoginOpen] = useState(false);
-
-  const handleBuy = (tier: PlanTier) => {
-    if (!session) {
-      setLoginOpen(true);
-      return;
-    }
-    const productId = POLAR_PRODUCT_IDS[tier];
-    const url = getCheckoutUrl(productId, {
-      customerEmail: session.user.email ?? undefined,
-      customerExternalId: session.user.id,
-    });
-    window.location.href = url;
+  const tierToStudioPath: Record<PlanTier, string> = {
+    basic: "/studio/basic",
+    bundle: "/studio/bundle",
+    legacy: "/studio/legacy",
   };
 
   return (
@@ -109,18 +96,17 @@ export default function PricingPage() {
                   </ul>
 
                   {/* CTA button */}
-                  <button
-                    type="button"
-                    onClick={() => handleBuy(tier)}
+                  <Link
+                    href={tierToStudioPath[tier]}
                     className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-sm transition-all ${
                       recommended
                         ? "bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 shadow-lg shadow-amber-500/15"
                         : "border border-slate-700 hover:border-amber-500/40 text-stone-300 hover:text-white hover:bg-slate-900"
                     }`}
                   >
-                    {t("pricing.buy")}
+                    选择该套餐并上传素材
                     <ArrowRight className="w-4 h-4" />
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))}
@@ -135,7 +121,6 @@ export default function PricingPage() {
           </div>
         </div>
       </div>
-      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
     </>
   );
 }
