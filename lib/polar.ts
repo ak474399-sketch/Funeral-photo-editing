@@ -3,12 +3,20 @@
  * Replace these with actual product IDs from Polar.sh dashboard.
  */
 export const POLAR_PRODUCT_IDS = {
-  basic: "PLACEHOLDER_BASIC_PRODUCT_ID",
-  standard: "PLACEHOLDER_STANDARD_PRODUCT_ID",
-  premium: "PLACEHOLDER_PREMIUM_PRODUCT_ID",
+  basic: "PLACEHOLDER_BASIC_RESTORATION_ID",
+  bundle: "PLACEHOLDER_MEMORIAL_BUNDLE_ID",
+  legacy: "PLACEHOLDER_LEGACY_COLLECTION_ID",
 } as const;
 
 export type PlanTier = keyof typeof POLAR_PRODUCT_IDS;
+
+export const TIER_ORDER: PlanTier[] = ["basic", "bundle", "legacy"];
+
+export const PLAN_PRICES: Record<PlanTier, number> = {
+  basic: 19.99,
+  bundle: 49.99,
+  legacy: 99.99,
+};
 
 export function getCheckoutUrl(productId: string, params?: { customerEmail?: string; customerExternalId?: string }): string {
   const base = "/api/checkout";

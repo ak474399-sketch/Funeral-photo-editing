@@ -6,6 +6,7 @@ import { Footer } from "@/components/shared/footer";
 import { AuthProvider } from "@/components/shared/auth-provider";
 import { LocaleProvider } from "@/components/shared/locale-provider";
 import { CookieConsentBar } from "@/components/shared/cookie-consent-bar";
+import { WebsiteStructuredData } from "@/components/shared/structured-data";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -39,17 +40,22 @@ export const metadata: Metadata = {
     url: siteUrl,
     siteName: "Funeral Photo Editing",
     type: "website",
+    images: [{ url: "/images/og-image.png", width: 1200, height: 630, alt: "Funeral Photo Editing" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Funeral Photo Editing",
     description: "AI-powered memorial photo editing — formal portraits, colorization, posters.",
+    images: ["/images/og-image.png"],
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <WebsiteStructuredData />
+      </head>
       <body className={`${playfair.variable} ${inter.variable} font-sans min-h-screen flex flex-col`}>
         <AuthProvider>
           <LocaleProvider>

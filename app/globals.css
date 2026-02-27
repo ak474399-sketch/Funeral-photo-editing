@@ -49,3 +49,22 @@ input[type="range"] {
 .candle-orb-warm {
   background: radial-gradient(circle, rgba(196,169,106,0.2) 0%, transparent 70%);
 }
+
+/* Blog prose styles */
+.prose-funeral {
+  @apply text-slate-300 leading-relaxed;
+}
+.prose-funeral h1 { @apply font-serif text-3xl font-bold text-white mt-10 mb-4; }
+.prose-funeral h2 { @apply font-serif text-2xl font-bold text-white mt-8 mb-3; }
+.prose-funeral h3 { @apply font-serif text-xl font-semibold text-white mt-6 mb-2; }
+.prose-funeral p { @apply mb-4 text-slate-400; }
+.prose-funeral ul { @apply list-disc list-inside mb-4 space-y-1 text-slate-400; }
+.prose-funeral ol { @apply list-decimal list-inside mb-4 space-y-1 text-slate-400; }
+.prose-funeral li { @apply text-slate-400; }
+.prose-funeral strong { @apply text-white font-semibold; }
+.prose-funeral a { @apply text-gold hover:text-gold-light underline underline-offset-2; }
+.prose-funeral blockquote { @apply border-l-2 border-gold/30 pl-4 italic text-slate-500 my-4; }
+.prose-funeral code { @apply bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded text-sm; }
+.prose-funeral pre { @apply bg-slate-900 border border-slate-800 rounded-xl p-4 mb-4 overflow-x-auto; }
+.prose-funeral img { @apply rounded-xl my-6 border border-slate-800; }
+.prose-funeral hr { @apply border-slate-800 my-8; }

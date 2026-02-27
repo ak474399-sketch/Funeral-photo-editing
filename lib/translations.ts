@@ -1,7 +1,7 @@
 import type { Locale } from "./i18n";
 
 export type TranslationKeys = {
-  nav: { home: string; edit: string; pricing: string; gallery: string; signIn: string; signOut: string };
+  nav: { home: string; edit: string; pricing: string; gallery: string; cases: string; blog: string; signIn: string; signOut: string };
   login: { welcomeToBrand: string; continueWithGoogle: string; redirecting: string; pleaseComplete: string; agreeTerms: string; and: string; terms: string; privacyPolicy: string };
   home: {
     hero: { badge: string; title: string; subtitle: string; cta: string; uploadTitle: string; uploadHint: string; privacyNote: string };
@@ -20,11 +20,12 @@ export type TranslationKeys = {
   pricing: {
     title: string;
     subtitle: string;
-    basic: { name: string; price: string; desc: string; f1: string; f2: string };
-    standard: { name: string; price: string; desc: string; f1: string; f2: string; f3: string };
-    premium: { name: string; price: string; desc: string; f1: string; f2: string; f3: string; f4: string };
+    guarantee: string;
+    bestValue: string;
+    basic: { name: string; headline: string; price: string; desc: string; f1: string; f2: string; f3: string; f4: string; f5: string };
+    bundle: { name: string; headline: string; price: string; desc: string; f1: string; f2: string; f3: string; f4: string; f5: string; f6: string };
+    legacy: { name: string; headline: string; price: string; desc: string; f1: string; f2: string; f3: string; f4: string };
     buy: string;
-    popular: string;
   };
   edit: {
     title: string;
@@ -83,12 +84,25 @@ export type TranslationKeys = {
       poster: { title: string; desc: string };
     };
   };
+  cases: {
+    badge: string; title: string; subtitle: string;
+    caseLabel: string; portraitLabel: string; posterLabel: string; socialLabel: string;
+    case1: { name: string; story: string };
+    case2: { name: string; story: string };
+    case3: { name: string; story: string };
+    ctaTitle: string; ctaButton: string;
+  };
+  faq: {
+    title: string; subtitle: string;
+    q1: { q: string; a: string }; q2: { q: string; a: string }; q3: { q: string; a: string }; q4: { q: string; a: string };
+    q5: { q: string; a: string }; q6: { q: string; a: string }; q7: { q: string; a: string }; q8: { q: string; a: string };
+  };
   cookieConsent: { message: string; accept: string; learnMore: string };
   common: { loading: string; error: string; success: string; back: string };
 };
 
 const en: TranslationKeys = {
-  nav: { home: "Home", edit: "Editor", pricing: "Pricing", gallery: "My Gallery", signIn: "Sign In", signOut: "Sign Out" },
+  nav: { home: "Home", edit: "Editor", pricing: "Pricing", gallery: "My Gallery", cases: "Cases", blog: "Blog", signIn: "Sign In", signOut: "Sign Out" },
   login: { welcomeToBrand: "Welcome to Funeral Photo Editing", continueWithGoogle: "Continue with Google", redirecting: "Redirecting…", pleaseComplete: "Please complete sign-in in the popup.", agreeTerms: "By continuing, you agree to our ", and: " and ", terms: "Terms of Service", privacyPolicy: "Privacy Policy" },
   home: {
     hero: { badge: "Honoring Heritage, Preserving Dignity", title: "Dignified Memories,\nBeautifully Restored", subtitle: "Give their legacy the reverence it deserves — transform cherished photos into lasting, honorable memorial portraits.", cta: "Begin Honoring Their Memory", uploadTitle: "Upload a Cherished Photo", uploadHint: "Drag & drop or click — JPG, PNG up to 10 MB. Your memories stay private.", privacyNote: "Photos are never stored or shared" },
@@ -105,13 +119,38 @@ const en: TranslationKeys = {
     cta: { title: "Ready to Create a Lasting Tribute?", subtitle: "Honor their memory with a portrait that speaks of love, dignity, and remembrance.", button: "Begin Their Tribute" },
   },
   pricing: {
-    title: "Choose Your Plan",
-    subtitle: "One-time purchase — use anytime",
-    basic: { name: "Basic", price: "$0.99", desc: "For a single memorial portrait", f1: "1 B&W formal portrait", f2: "1 memorial poster" },
-    standard: { name: "Standard", price: "$9.99", desc: "Multiple formats and sizes", f1: "Multiple poster sizes & formats", f2: "Multiple formal portraits", f3: "Batch processing (10 each)" },
-    premium: { name: "Premium", price: "$39.99", desc: "All features, unlimited use", f1: "All features included", f2: "Colorization & attire replacement", f3: "Background editing & composites", f4: "Print-ready high resolution" },
-    buy: "Purchase",
-    popular: "Most Popular",
+    title: "Honor Their Memory with Dignity",
+    subtitle: "One-time purchase — no subscriptions, no hidden fees. Results in minutes.",
+    guarantee: "100% Money-back Guarantee",
+    bestValue: "Best Value",
+    basic: {
+      name: "Basic Restoration", headline: "Dignified Essentials", price: "$19.99",
+      desc: "One-time purchase",
+      f1: "1× Identity-Preserving 8K Restoration",
+      f2: "Formal Attire Addition (Suit / Dress)",
+      f3: "Studio Gradient Background",
+      f4: "Ready in 15 Minutes",
+      f5: "100% Money-back Guarantee",
+    },
+    bundle: {
+      name: "The Memorial Bundle", headline: "Complete Tribute Package", price: "$49.99",
+      desc: "One-time purchase",
+      f1: "Everything in Basic Restoration",
+      f2: "Print-Ready Master File (large displays / headstones)",
+      f3: "Digital Obituary Card (Social Media / WhatsApp)",
+      f4: "Printable Memorial Booklet PDF Template",
+      f5: "Lifetime Secure Cloud Storage",
+      f6: "High-Priority Processing (Top of Queue)",
+    },
+    legacy: {
+      name: "Legacy Collection", headline: "Eternal Heritage", price: "$99.99",
+      desc: "One-time purchase",
+      f1: "Restoration for up to 3 photos (Childhood, Prime, Recent)",
+      f2: "1-on-1 AI Quality Audit by a Human Expert",
+      f3: "All formats from the Bundle — for all 3 photos",
+      f4: "VIP 24/7 Priority Support",
+    },
+    buy: "Purchase Now",
   },
   edit: {
     title: "Memorial Photo Editor",
@@ -169,13 +208,32 @@ const en: TranslationKeys = {
       poster: { title: "Memorial Poster Design", desc: "Create dignified memorial posters with custom text" },
     },
   },
+  cases: {
+    badge: "Case Studies", title: "Memorial Photo Portfolios", subtitle: "Complete memorial sets — formal portraits, posters, and social media tributes",
+    caseLabel: "Case", portraitLabel: "Formal Portrait", posterLabel: "Memorial Poster", socialLabel: "Social Media",
+    case1: { name: "The Yamamoto Family", story: "A treasured 1960s photograph of Mr. Yamamoto was transformed into a complete memorial set — a dignified formal portrait, a commemorative poster, and social media tributes for family abroad." },
+    case2: { name: "The Chen Family", story: "Mrs. Chen's casual garden photo became the centerpiece of her memorial. AI colorization brought warmth to the vintage black & white original, and formal attire was applied with grace." },
+    case3: { name: "The Williams Family", story: "Multiple family snapshots were composited into a single, timeless portrait uniting three generations — accompanied by a memorial poster and online sharing formats." },
+    ctaTitle: "Create Your Family's Memorial", ctaButton: "Start Editing Now",
+  },
+  faq: {
+    title: "Frequently Asked Questions", subtitle: "Everything you need to know about our memorial photo services",
+    q1: { q: "How does the AI memorial photo editing work?", a: "Our AI analyzes your uploaded photo and applies professional-grade editing — from generating formal portraits with appropriate attire to colorizing vintage black & white images. The entire process takes just seconds, with results you can download instantly." },
+    q2: { q: "What photo formats and sizes are supported?", a: "We accept JPG and PNG images up to 10 MB. Output images are available in multiple sizes suitable for printing (4×6, 5×7, 8×10, A4) as well as web and social media formats." },
+    q3: { q: "Is my photo data kept private and secure?", a: "Absolutely. Your photos are processed in real-time and never stored on our servers after generation. We do not share, sell, or use your images for any purpose other than the service you requested." },
+    q4: { q: "Can I edit a very old or damaged photograph?", a: "Yes. Our AI is trained to handle low-resolution, faded, and damaged photos. While severely damaged images may have some limitations, most vintage photos produce excellent results with colorization and formal portrait generation." },
+    q5: { q: "What's included in each pricing tier?", a: "Basic Restoration ($19.99): 1 identity-preserving 8K restoration with formal attire and studio background. The Memorial Bundle ($49.99): Everything in Basic plus print-ready master files, digital obituary card, memorial booklet template, and lifetime cloud storage. Legacy Collection ($99.99): Up to 3 photo restorations with human expert audit and VIP support." },
+    q6: { q: "How do I get a print-ready memorial photo?", a: "After generating your memorial photo, you can download it in specific print sizes (4×6, 5×7, 8×10, A4). These are exported at 300 DPI — the industry standard for high-quality photo printing." },
+    q7: { q: "Can I create a family composite from separate photos?", a: "Yes. With the Premium plan, you can upload multiple individual photos and our AI will combine them into a single, natural-looking family portrait — perfect for when no group photo exists." },
+    q8: { q: "Do you support languages other than English?", a: "Yes. Our interface is available in English, Japanese (日本語), and Traditional Chinese (繁體中文). You can switch languages anytime using the language selector in the navigation bar." },
+  },
   footer: { brand: "Funeral Photo Editing", tagline: "Dignified memorial photo services powered by AI", terms: "Terms of Service", privacy: "Privacy Policy", copyright: "© 2026 Funeral Photo Editing. All rights reserved." },
   cookieConsent: { message: "We use cookies to improve your experience.", accept: "Accept", learnMore: "Learn More" },
   common: { loading: "Loading…", error: "An error occurred.", success: "Success!", back: "Back" },
 };
 
 const ja: TranslationKeys = {
-  nav: { home: "ホーム", edit: "エディタ", pricing: "料金", gallery: "マイギャラリー", signIn: "ログイン", signOut: "ログアウト" },
+  nav: { home: "ホーム", edit: "エディタ", pricing: "料金", gallery: "マイギャラリー", cases: "事例", blog: "ブログ", signIn: "ログイン", signOut: "ログアウト" },
   login: { welcomeToBrand: "遺影写真編集へようこそ", continueWithGoogle: "Googleでログイン", redirecting: "リダイレクト中…", pleaseComplete: "ポップアップでログインを完了してください。", agreeTerms: "続行することで、", and: "および", terms: "利用規約", privacyPolicy: "プライバシーポリシー" },
   home: {
     hero: { badge: "遺産を敬い、尊厳を守る", title: "尊厳ある思い出を、\n美しく蘇らせる", subtitle: "大切な方の遺産にふさわしい敬意を——愛する写真を永遠に残る、格式ある遺影に。", cta: "追悼の想いを形に", uploadTitle: "大切なお写真をアップロード", uploadHint: "ドラッグ＆ドロップまたはクリック — JPG、PNG（最大10MB）", privacyNote: "お写真は保存・共有されません" },
@@ -192,13 +250,38 @@ const ja: TranslationKeys = {
     cta: { title: "永遠の追悼を作成する準備はできましたか？", subtitle: "愛と尊厳と追憶を伝える遺影で、その思い出を称えましょう。", button: "追悼を始める" },
   },
   pricing: {
-    title: "プランを選択",
-    subtitle: "一回限りの購入——いつでも使用可能",
-    basic: { name: "ベーシック", price: "$0.99", desc: "遺影ポートレート1枚向け", f1: "白黒正装遺影 1枚", f2: "追悼ポスター 1枚" },
-    standard: { name: "スタンダード", price: "$9.99", desc: "複数のフォーマットとサイズ", f1: "複数サイズのポスター", f2: "複数の正装写真", f3: "バッチ処理（各10枚）" },
-    premium: { name: "プレミアム", price: "$39.99", desc: "全機能、無制限使用", f1: "全機能利用可能", f2: "カラー化・服装変更", f3: "背景編集・合成写真", f4: "印刷用高解像度出力" },
-    buy: "購入する",
-    popular: "人気プラン",
+    title: "尊厳をもって、その思い出を称える",
+    subtitle: "一回限りの購入——サブスク不要、隠れた費用なし。数分で完成。",
+    guarantee: "100%返金保証",
+    bestValue: "お得なプラン",
+    basic: {
+      name: "ベーシック修復", headline: "格式ある必需品", price: "$19.99",
+      desc: "一回限りの購入",
+      f1: "本人の特徴を保持した8K修復 1回",
+      f2: "正装の自動追加（スーツ／ドレス）",
+      f3: "スタジオ品質のグラデーション背景",
+      f4: "15分以内に完成",
+      f5: "100%返金保証",
+    },
+    bundle: {
+      name: "メモリアルバンドル", headline: "完全追悼パッケージ", price: "$49.99",
+      desc: "一回限りの購入",
+      f1: "ベーシック修復の全内容を含む",
+      f2: "印刷用マスターファイル（大型展示・墓石用）",
+      f3: "デジタル訃報カード（SNS・WhatsApp対応）",
+      f4: "印刷可能なメモリアルブックレットPDFテンプレート",
+      f5: "永久セキュアクラウド保存",
+      f6: "優先処理（キューの最上位）",
+    },
+    legacy: {
+      name: "レガシーコレクション", headline: "永遠の遺産", price: "$99.99",
+      desc: "一回限りの購入",
+      f1: "最大3枚の写真を修復（幼少期・壮年期・近影）",
+      f2: "人間の専門家による1対1のAI品質監査",
+      f3: "バンドルの全フォーマット——3枚すべてに適用",
+      f4: "VIP 24時間365日優先サポート",
+    },
+    buy: "今すぐ購入",
   },
   edit: {
     title: "遺影写真エディタ",
@@ -256,13 +339,32 @@ const ja: TranslationKeys = {
       poster: { title: "追悼ポスターデザイン", desc: "テキスト付きの格式あるポスター" },
     },
   },
+  cases: {
+    badge: "導入事例", title: "遺影写真ポートフォリオ", subtitle: "正装遺影、追悼ポスター、SNS用画像の完全セット",
+    caseLabel: "事例", portraitLabel: "正装遺影", posterLabel: "追悼ポスター", socialLabel: "SNS共有用",
+    case1: { name: "山本家", story: "1960年代の大切なお写真が完全な遺影セットに。格式ある正装遺影、記念ポスター、そして遠方のご家族向けのSNS用画像を作成しました。" },
+    case2: { name: "陳家", story: "陳さんのお庭での何気ない写真がメモリアルの中心に。AIカラー化により白黒の原画に温かみを取り戻し、品格ある正装を自然に合成しました。" },
+    case3: { name: "ウィリアムズ家", story: "複数の家族スナップを合成し、三世代が一堂に会す永遠の家族写真に。追悼ポスターとオンライン共有用フォーマットも併せて作成しました。" },
+    ctaTitle: "ご家族の追悼を形に", ctaButton: "編集を始める",
+  },
+  faq: {
+    title: "よくあるご質問", subtitle: "遺影写真サービスについてのご案内",
+    q1: { q: "AIによる遺影写真編集はどのように行われますか？", a: "アップロードされたお写真をAIが分析し、正装遺影の生成や白黒写真のカラー化など、プロ品質の編集を行います。処理はわずか数秒で完了し、すぐにダウンロードいただけます。" },
+    q2: { q: "対応している画像形式とサイズは？", a: "JPGとPNG形式で最大10MBまでの画像に対応しています。出力画像は印刷用（4×6、5×7、8×10、A4）やウェブ・SNS用の複数サイズでダウンロード可能です。" },
+    q3: { q: "写真データのプライバシーは守られますか？", a: "もちろんです。お写真はリアルタイムで処理され、生成後にサーバーに保存されることはありません。お客様の画像を共有・販売・他の目的に使用することは一切ありません。" },
+    q4: { q: "非常に古い写真や傷んだ写真も編集できますか？", a: "はい。当AIは低解像度、色褪せ、傷みのある写真にも対応しています。ひどく損傷した画像には制約がある場合もありますが、ほとんどのヴィンテージ写真で優れた結果が得られます。" },
+    q5: { q: "各料金プランには何が含まれますか？", a: "ベーシック修復（$19.99）：本人の特徴を保持した8K修復1回、正装追加、スタジオ背景。メモリアルバンドル（$49.99）：ベーシックの全内容＋印刷用マスターファイル、訃報カード、ブックレットテンプレート、永久クラウド保存。レガシーコレクション（$99.99）：最大3枚修復、専門家監査、VIPサポート。" },
+    q6: { q: "印刷用の遺影写真はどうやって入手しますか？", a: "遺影写真を生成した後、特定の印刷サイズ（4×6、5×7、8×10、A4）でダウンロードできます。出力は300DPI — 高品質写真印刷の業界標準です。" },
+    q7: { q: "別々の写真から家族合成写真を作れますか？", a: "はい。プレミアムプランでは、複数の個別写真をアップロードし、AIが自然な家族写真に合成します。集合写真がない場合に最適です。" },
+    q8: { q: "英語以外の言語に対応していますか？", a: "はい。英語、日本語、繁体字中国語に対応しています。ナビゲーションバーの言語セレクターからいつでも切り替えられます。" },
+  },
   footer: { brand: "遺影写真編集", tagline: "AIによる尊厳ある遺影写真サービス", terms: "利用規約", privacy: "プライバシーポリシー", copyright: "© 2026 Funeral Photo Editing. All rights reserved." },
   cookieConsent: { message: "当サイトではCookieを使用しています。", accept: "同意する", learnMore: "詳細" },
   common: { loading: "読み込み中…", error: "エラーが発生しました。", success: "成功！", back: "戻る" },
 };
 
 const zhTW: TranslationKeys = {
-  nav: { home: "首頁", edit: "編輯器", pricing: "方案", gallery: "我的相簿", signIn: "登入", signOut: "登出" },
+  nav: { home: "首頁", edit: "編輯器", pricing: "方案", gallery: "我的相簿", cases: "案例", blog: "部落格", signIn: "登入", signOut: "登出" },
   login: { welcomeToBrand: "歡迎使用遺照編輯", continueWithGoogle: "使用 Google 登入", redirecting: "跳轉中…", pleaseComplete: "請在彈出視窗中完成登入。", agreeTerms: "繼續即表示您同意我們的", and: "和", terms: "服務條款", privacyPolicy: "隱私政策" },
   home: {
     hero: { badge: "敬奉傳承，守護尊嚴", title: "有尊嚴的回憶，\n美麗地修復", subtitle: "賦予摯愛的遺產應有的敬意——將珍藏的照片化為永恆、莊嚴的紀念肖像。", cta: "開始追思紀念", uploadTitle: "上傳一張珍貴照片", uploadHint: "拖放或點擊上傳 — JPG、PNG（最大 10MB）", privacyNote: "照片不會被儲存或分享" },
@@ -279,13 +381,38 @@ const zhTW: TranslationKeys = {
     cta: { title: "準備好製作永恆的紀念了嗎？", subtitle: "用一張承載著愛、尊嚴與追憶的遺照，來紀念他們的一生。", button: "開始追思" },
   },
   pricing: {
-    title: "選擇方案",
-    subtitle: "一次性購買——隨時使用",
-    basic: { name: "基礎版", price: "$0.99", desc: "適用於單張遺照", f1: "黑白正裝遺照 1 張", f2: "追思海報 1 張" },
-    standard: { name: "標準版", price: "$9.99", desc: "多種格式與尺寸", f1: "多種尺寸海報", f2: "多張正裝照片", f3: "批次處理（各 10 張）" },
-    premium: { name: "尊享版", price: "$39.99", desc: "全部功能，無限使用", f1: "包含所有功能", f2: "上色與服裝替換", f3: "背景編輯與合照合成", f4: "可列印高解析度輸出" },
-    buy: "購買",
-    popular: "最受歡迎",
+    title: "以尊嚴紀念他們的一生",
+    subtitle: "一次性購買——無訂閱、無隱藏費用。數分鐘內完成。",
+    guarantee: "100% 退款保證",
+    bestValue: "最佳方案",
+    basic: {
+      name: "基礎修復", headline: "莊嚴必備", price: "$19.99",
+      desc: "一次性購買",
+      f1: "1 次保留本人特徵的 8K 修復",
+      f2: "自動添加正式服裝（西裝／洋裝）",
+      f3: "專業棚拍漸層背景",
+      f4: "15 分鐘內完成",
+      f5: "100% 退款保證",
+    },
+    bundle: {
+      name: "追思紀念套組", headline: "完整追悼方案", price: "$49.99",
+      desc: "一次性購買",
+      f1: "包含基礎修復的所有內容",
+      f2: "可列印主檔（大型展示／墓碑用）",
+      f3: "數位訃告卡（社群媒體／WhatsApp）",
+      f4: "可列印追思手冊 PDF 模板",
+      f5: "終身安全雲端儲存",
+      f6: "優先處理（排隊最前）",
+    },
+    legacy: {
+      name: "傳承典藏", headline: "永恆遺產", price: "$99.99",
+      desc: "一次性購買",
+      f1: "最多修復 3 張照片（童年、壯年、近照）",
+      f2: "人工專家一對一 AI 品質審核",
+      f3: "套組的所有格式——適用於全部 3 張照片",
+      f4: "VIP 全天候優先支援",
+    },
+    buy: "立即購買",
   },
   edit: {
     title: "遺照編輯器",
@@ -342,6 +469,25 @@ const zhTW: TranslationKeys = {
       composite: { title: "家族合照合成", desc: "多張照片合成一張家族照" },
       poster: { title: "追思海報設計", desc: "製作帶自訂文字的莊嚴海報" },
     },
+  },
+  cases: {
+    badge: "案例展示", title: "遺照作品集", subtitle: "完整的紀念套組——正裝遺照、追思海報與社群分享",
+    caseLabel: "案例", portraitLabel: "正裝遺照", posterLabel: "追思海報", socialLabel: "社群分享",
+    case1: { name: "山本家族", story: "一張1960年代珍貴的老照片被轉化為完整的紀念套組——莊嚴的正裝遺照、紀念海報，以及供海外親友使用的社群分享圖片。" },
+    case2: { name: "陳家", story: "陳女士在花園中的日常照片成為追思會的焦點。AI上色技術為黑白原照注入溫暖，並優雅地搭配上正式服裝。" },
+    case3: { name: "威廉斯家族", story: "多張家庭快照合成為一張跨越三代的永恆家族肖像——同時附上追思海報與線上分享格式。" },
+    ctaTitle: "為您的家人製作紀念作品", ctaButton: "立即開始編輯",
+  },
+  faq: {
+    title: "常見問題", subtitle: "關於我們遺照服務的一切資訊",
+    q1: { q: "AI 遺照編輯是如何運作的？", a: "我們的 AI 會分析您上傳的照片，並進行專業級編輯——從生成搭配正式服裝的遺照肖像，到為老舊黑白照片上色。整個過程只需幾秒鐘，結果可以立即下載。" },
+    q2: { q: "支援哪些圖片格式和尺寸？", a: "我們接受 JPG 和 PNG 格式，最大 10 MB。輸出圖片提供多種尺寸，適用於列印（4×6、5×7、8×10、A4）以及網頁和社群媒體。" },
+    q3: { q: "我的照片資料是否安全保密？", a: "絕對是。您的照片會即時處理，生成後不會儲存在我們的伺服器上。我們不會分享、出售或將您的圖片用於任何其他目的。" },
+    q4: { q: "可以編輯非常老舊或損壞的照片嗎？", a: "可以。我們的 AI 經過訓練，能處理低解析度、褪色和受損的照片。雖然嚴重損壞的圖片可能有些限制，但大多數老照片在上色和遺照生成方面都能獲得出色的效果。" },
+    q5: { q: "每個方案包含什麼？", a: "基礎修復（$19.99）：1 次保留本人特徵的 8K 修復，含正裝和棚拍背景。追思紀念套組（$49.99）：基礎修復全部內容，加上可列印主檔、數位訃告卡、追思手冊模板和終身雲端儲存。傳承典藏（$99.99）：最多 3 張照片修復、人工專家審核和 VIP 支援。" },
+    q6: { q: "如何取得可列印的遺照？", a: "生成遺照後，您可以選擇特定列印尺寸（4×6、5×7、8×10、A4）下載。輸出為 300 DPI——高品質照片列印的業界標準。" },
+    q7: { q: "可以用不同的照片合成家族合照嗎？", a: "可以。尊享版方案允許您上傳多張個人照片，AI 會將它們合成為一張自然的家族肖像——非常適合沒有合照的情況。" },
+    q8: { q: "是否支援英語以外的語言？", a: "是的。我們的介面支援英語、日語（日本語）和繁體中文。您可以隨時使用導覽列中的語言選擇器切換語言。" },
   },
   footer: { brand: "遺照編輯", tagline: "AI 驅動的莊嚴遺照服務", terms: "服務條款", privacy: "隱私政策", copyright: "© 2026 Funeral Photo Editing. All rights reserved." },
   cookieConsent: { message: "我們使用 Cookie 來改善您的體驗。", accept: "接受", learnMore: "了解更多" },

@@ -1,25 +1,33 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { Check, ArrowRight } from "lucide-react";
+import { Check, ArrowRight, Shield, Star, Crown } from "lucide-react";
 import { useLocale } from "@/components/shared/locale-provider";
-import { POLAR_PRODUCT_IDS } from "@/lib/polar";
+import { POLAR_PRODUCT_IDS, type PlanTier } from "@/lib/polar";
 import { getCheckoutUrl } from "@/lib/polar";
 import { useState } from "react";
 import { LoginModal } from "@/components/shared/login-modal";
+import { LilyDivider } from "@/components/shared/lily-decoration";
 
-const plans = [
-  { tier: "basic" as const, features: ["f1", "f2"] },
-  { tier: "standard" as const, features: ["f1", "f2", "f3"] },
-  { tier: "premium" as const, features: ["f1", "f2", "f3", "f4"] },
-] as const;
+type PlanConfig = {
+  tier: PlanTier;
+  icon: typeof Shield;
+  features: string[];
+  recommended?: boolean;
+};
+
+const plans: PlanConfig[] = [
+  { tier: "basic", icon: Shield, features: ["f1", "f2", "f3", "f4", "f5"] },
+  { tier: "bundle", icon: Star, features: ["f1", "f2", "f3", "f4", "f5", "f6"], recommended: true },
+  { tier: "legacy", icon: Crown, features: ["f1", "f2", "f3", "f4"] },
+];
 
 export default function PricingPage() {
   const { t } = useLocale();
   const { data: session } = useSession();
   const [loginOpen, setLoginOpen] = useState(false);
 
-  const handleBuy = (tier: keyof typeof POLAR_PRODUCT_IDS) => {
+  const handleBuy = (tier: PlanTier) => {
     if (!session) {
       setLoginOpen(true);
       return;
@@ -36,41 +44,94 @@ export default function PricingPage() {
     <>
       <div className="py-16 sm:py-24">
         <div className="container mx-auto px-4 sm:px-6">
+          {/* Header */}
           <div className="text-center mb-16">
             <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
               {t("pricing.title")}
             </h1>
-            <p className="mt-4 text-slate-400 text-lg">{t("pricing.subtitle")}</p>
+            <LilyDivider className="mt-5 mb-4" />
+            <p className="mt-4 text-stone-400 text-lg max-w-2xl mx-auto">{t("pricing.subtitle")}</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {plans.map(({ tier, features }) => {
-              const isPopular = tier === "standard";
-              return (
-                <div key={tier} className={`relative p-6 sm:p-8 rounded-2xl border transition-all ${isPopular ? "border-gold/50 bg-slate-900 shadow-lg shadow-gold/5 md:scale-[1.03]" : "border-slate-800 bg-slate-900/40"}`}>
-                  {isPopular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gold text-slate-950 text-xs font-bold rounded-full">
-                      {t("pricing.popular")}
+          {/* Plans grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-5 max-w-6xl mx-auto items-start">
+            {plans.map(({ tier, icon: Icon, features, recommended }) => (
+              <div
+                key={tier}
+                className={`relative rounded-2xl border transition-all ${
+                  recommended
+                    ? "border-amber-500/50 bg-slate-900 shadow-xl shadow-amber-900/10 lg:scale-[1.04] ring-1 ring-amber-500/20 z-10"
+                    : "border-slate-800 bg-slate-950/80"
+                }`}
+              >
+                {/* Best Value badge */}
+                {recommended && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-5 py-1.5 bg-gradient-to-r from-amber-600 to-amber-500 text-slate-950 text-xs font-bold rounded-full shadow-lg shadow-amber-500/20 tracking-wide">
+                    {t("pricing.bestValue")}
+                  </div>
+                )}
+
+                <div className="p-6 sm:p-8">
+                  {/* Icon + tier name */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${recommended ? "bg-amber-500/15" : "bg-slate-800"}`}>
+                      <Icon className={`w-5 h-5 ${recommended ? "text-amber-400" : "text-stone-400"}`} />
                     </div>
-                  )}
-                  <h3 className="font-serif text-xl font-bold text-white">{t(`pricing.${tier}.name`)}</h3>
-                  <p className="text-4xl font-bold text-gold mt-4">{t(`pricing.${tier}.price`)}</p>
-                  <p className="text-sm text-slate-500 mt-2">{t(`pricing.${tier}.desc`)}</p>
-                  <ul className="mt-8 space-y-3">
+                    <div>
+                      <h3 className="font-serif text-lg font-bold text-white">{t(`pricing.${tier}.name`)}</h3>
+                    </div>
+                  </div>
+
+                  {/* Headline */}
+                  <p className={`text-sm font-medium mb-5 ${recommended ? "text-amber-400/80" : "text-stone-500"}`}>
+                    {t(`pricing.${tier}.headline`)}
+                  </p>
+
+                  {/* Price */}
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <span className={`text-4xl font-bold ${recommended ? "text-amber-400" : "text-white"}`}>
+                      {t(`pricing.${tier}.price`)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-stone-600 mb-6">{t(`pricing.${tier}.desc`)}</p>
+
+                  {/* Divider */}
+                  <div className={`h-px mb-6 ${recommended ? "bg-amber-500/20" : "bg-slate-800"}`} />
+
+                  {/* Features */}
+                  <ul className="space-y-3.5 mb-8">
                     {features.map((fk) => (
-                      <li key={fk} className="flex items-start gap-2.5 text-sm text-slate-300">
-                        <Check className="w-4 h-4 text-gold shrink-0 mt-0.5" />
-                        {t(`pricing.${tier}.${fk}`)}
+                      <li key={fk} className="flex items-start gap-3 text-sm">
+                        <Check className={`w-4 h-4 shrink-0 mt-0.5 ${recommended ? "text-amber-400" : "text-gold"}`} />
+                        <span className="text-stone-300">{t(`pricing.${tier}.${fk}`)}</span>
                       </li>
                     ))}
                   </ul>
-                  <button type="button" onClick={() => handleBuy(tier)} className={`mt-8 w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-sm transition-colors ${isPopular ? "bg-gold hover:bg-gold-light text-slate-950" : "border border-slate-700 hover:border-gold/50 text-slate-300 hover:text-white"}`}>
+
+                  {/* CTA button */}
+                  <button
+                    type="button"
+                    onClick={() => handleBuy(tier)}
+                    className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-sm transition-all ${
+                      recommended
+                        ? "bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 shadow-lg shadow-amber-500/15"
+                        : "border border-slate-700 hover:border-amber-500/40 text-stone-300 hover:text-white hover:bg-slate-900"
+                    }`}
+                  >
                     {t("pricing.buy")}
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
-              );
-            })}
+              </div>
+            ))}
+          </div>
+
+          {/* Guarantee bar */}
+          <div className="mt-12 text-center">
+            <p className="inline-flex items-center gap-2 text-sm text-stone-500">
+              <Shield className="w-4 h-4 text-amber-500/60" />
+              {t("pricing.guarantee")}
+            </p>
           </div>
         </div>
       </div>

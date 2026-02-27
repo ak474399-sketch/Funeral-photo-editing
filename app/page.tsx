@@ -16,11 +16,15 @@ import {
   ArrowRight,
   Check,
   Upload,
+  Shield,
+  Star,
+  Crown,
 } from "lucide-react";
 
 const FeatureSection = dynamic(() => import("@/components/shared/feature-section"), { ssr: false });
 const ReviewsCarousel = dynamic(() => import("@/components/shared/reviews-carousel").then((m) => ({ default: m.ReviewsCarousel })), { ssr: false });
 const ToolsSection = dynamic(() => import("@/components/shared/tools-section").then((m) => ({ default: m.ToolsSection })), { ssr: false });
+const FaqSection = dynamic(() => import("@/components/shared/faq-section").then((m) => ({ default: m.FaqSection })), { ssr: false });
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -224,41 +228,79 @@ export default function HomePage() {
             <motion.div variants={fadeUp}>
               <LilyDivider className="mt-4 mb-3" />
             </motion.div>
-            <motion.p variants={fadeUp} className="text-slate-400 text-lg">
+            <motion.p variants={fadeUp} className="text-stone-400 text-lg">
               {t("home.pricing.subtitle")}
             </motion.p>
           </motion.div>
 
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {(["basic", "standard", "premium"] as const).map((tier) => {
-              const isPopular = tier === "standard";
-              return (
-                <motion.div key={tier} variants={fadeUp} className={`relative p-6 sm:p-8 rounded-2xl border transition-all ${isPopular ? "border-gold/50 bg-slate-900 shadow-lg shadow-gold/5 scale-[1.02]" : "border-slate-800 bg-slate-900/40"}`}>
-                  {isPopular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gold text-slate-950 text-xs font-bold rounded-full">
-                      {t("pricing.popular")}
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-6xl mx-auto items-start">
+            {([
+              { tier: "basic" as const, icon: Shield, features: ["f1", "f2", "f3", "f4", "f5"] },
+              { tier: "bundle" as const, icon: Star, features: ["f1", "f2", "f3", "f4", "f5", "f6"], recommended: true },
+              { tier: "legacy" as const, icon: Crown, features: ["f1", "f2", "f3", "f4"] },
+            ]).map(({ tier, icon: Icon, features, recommended }) => (
+              <motion.div
+                key={tier}
+                variants={fadeUp}
+                className={`relative rounded-2xl border transition-all ${
+                  recommended
+                    ? "border-amber-500/50 bg-slate-900 shadow-xl shadow-amber-900/10 md:scale-[1.03] ring-1 ring-amber-500/20"
+                    : "border-slate-800 bg-slate-950/80"
+                }`}
+              >
+                {recommended && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-5 py-1.5 bg-gradient-to-r from-amber-600 to-amber-500 text-slate-950 text-xs font-bold rounded-full shadow-lg shadow-amber-500/20 tracking-wide">
+                    {t("pricing.bestValue")}
+                  </div>
+                )}
+                <div className="p-6 sm:p-8">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${recommended ? "bg-amber-500/15" : "bg-slate-800"}`}>
+                      <Icon className={`w-4.5 h-4.5 ${recommended ? "text-amber-400" : "text-stone-400"}`} />
                     </div>
-                  )}
-                  <h3 className="font-serif text-xl font-bold text-white">{t(`pricing.${tier}.name`)}</h3>
-                  <p className="text-3xl font-bold text-gold mt-3">{t(`pricing.${tier}.price`)}</p>
-                  <p className="text-sm text-slate-500 mt-1">{t(`pricing.${tier}.desc`)}</p>
-                  <ul className="mt-6 space-y-3">
-                    {(tier === "basic" ? ["f1", "f2"] : tier === "standard" ? ["f1", "f2", "f3"] : ["f1", "f2", "f3", "f4"]).map((fk) => (
-                      <li key={fk} className="flex items-start gap-2 text-sm text-slate-300">
-                        <Check className="w-4 h-4 text-gold shrink-0 mt-0.5" />
+                    <h3 className="font-serif text-lg font-bold text-white">{t(`pricing.${tier}.name`)}</h3>
+                  </div>
+                  <p className={`text-xs font-medium mb-4 ${recommended ? "text-amber-400/80" : "text-stone-500"}`}>{t(`pricing.${tier}.headline`)}</p>
+                  <p className={`text-3xl font-bold mb-1 ${recommended ? "text-amber-400" : "text-white"}`}>{t(`pricing.${tier}.price`)}</p>
+                  <p className="text-xs text-stone-600 mb-5">{t(`pricing.${tier}.desc`)}</p>
+                  <div className={`h-px mb-5 ${recommended ? "bg-amber-500/20" : "bg-slate-800"}`} />
+                  <ul className="space-y-3 mb-6">
+                    {features.slice(0, 4).map((fk) => (
+                      <li key={fk} className="flex items-start gap-2 text-sm text-stone-300">
+                        <Check className={`w-4 h-4 shrink-0 mt-0.5 ${recommended ? "text-amber-400" : "text-gold"}`} />
                         {t(`pricing.${tier}.${fk}`)}
                       </li>
                     ))}
+                    {features.length > 4 && (
+                      <li className="text-xs text-stone-500 pl-6">+ {features.length - 4} more...</li>
+                    )}
                   </ul>
-                  <Link href="/pricing" className={`mt-8 block text-center py-3 rounded-xl font-semibold text-sm transition-colors ${isPopular ? "bg-gold hover:bg-gold-light text-slate-950" : "border border-slate-700 hover:border-gold/50 text-slate-300 hover:text-white"}`}>
+                  <Link
+                    href="/pricing"
+                    className={`block text-center py-3 rounded-xl font-semibold text-sm transition-all ${
+                      recommended
+                        ? "bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 shadow-lg shadow-amber-500/15"
+                        : "border border-slate-700 hover:border-amber-500/40 text-stone-300 hover:text-white"
+                    }`}
+                  >
                     {t("pricing.buy")}
                   </Link>
-                </motion.div>
-              );
-            })}
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="mt-10 text-center">
+            <p className="inline-flex items-center gap-2 text-sm text-stone-500">
+              <Shield className="w-4 h-4 text-amber-500/60" />
+              {t("pricing.guarantee")}
+            </p>
           </motion.div>
         </div>
       </section>
+
+      {/* ═══════════ FAQ ═══════════ */}
+      <FaqSection />
 
       {/* ═══════════ CTA ═══════════ */}
       <section className="relative py-20 sm:py-28 bg-gradient-to-b from-slate-900/50 to-slate-950 overflow-hidden">

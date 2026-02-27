@@ -11,15 +11,15 @@ export type FuneralOrder = {
 };
 
 const TIER_PERMISSIONS: Record<PlanTier, string[]> = {
-  basic: ["portrait", "poster"],
-  standard: ["portrait", "poster", "batch"],
-  premium: ["portrait", "colorize", "attire", "background", "composite", "poster", "batch", "print"],
+  basic: ["portrait", "attire", "background"],
+  bundle: ["portrait", "attire", "background", "poster", "print", "cloud"],
+  legacy: ["portrait", "colorize", "attire", "background", "composite", "poster", "batch", "print", "cloud", "audit"],
 };
 
 const TIER_LIMITS: Record<PlanTier, number> = {
   basic: 1,
-  standard: 10,
-  premium: Infinity,
+  bundle: 3,
+  legacy: 9,
 };
 
 export async function getUserOrders(userId: string): Promise<FuneralOrder[]> {
@@ -34,7 +34,7 @@ export async function getUserOrders(userId: string): Promise<FuneralOrder[]> {
 export async function getHighestTier(userId: string): Promise<PlanTier | null> {
   const orders = await getUserOrders(userId);
   if (orders.length === 0) return null;
-  const tierRank: Record<string, number> = { basic: 1, standard: 2, premium: 3 };
+  const tierRank: Record<string, number> = { basic: 1, bundle: 2, legacy: 3 };
   let best: PlanTier | null = null;
   let bestRank = 0;
   for (const o of orders) {
@@ -54,7 +54,6 @@ export async function getRemainingGenerations(userId: string): Promise<number> {
   const tier = await getHighestTier(userId);
   if (!tier) return 0;
   const limit = TIER_LIMITS[tier];
-  if (limit === Infinity) return Infinity;
 
   const { count } = await supabaseAdmin
     .from("funeral_generations")
