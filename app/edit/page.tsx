@@ -1,24 +1,32 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Loader2, Download, X, Plus, ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle2, Download, Loader2, Shield, Sparkles, UploadCloud } from "lucide-react";
 import { useLocale } from "@/components/shared/locale-provider";
 import { UploadZone } from "@/components/editor/upload-zone";
-import { FunctionSelector } from "@/components/editor/function-selector";
-import { PrintSizes } from "@/components/editor/print-sizes";
 import { LoginModal } from "@/components/shared/login-modal";
 import type { GenType } from "@/lib/gemini";
 
-type QueueItem = {
+type PackageType = "basic" | "bundle";
+type ScanResult = {
+  width: number;
+  height: number;
+  sizeMB: number;
+  status: "good" | "warn";
+  noteKeys: string[];
+};
+type DeliveryAsset = {
   id: string;
-  file: File;
-  preview: string;
+  labelKey: "portrait" | "poster" | "card";
+  genType: GenType;
   status: "pending" | "processing" | "done" | "error";
   resultBase64?: string;
   resultMime?: string;
   error?: string;
 };
+
+const steps = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }] as const;
 
 function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -32,105 +40,173 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
+function scanImage(file: File): Promise<ScanResult> {
+  return new Promise((resolve) => {
+    const image = new Image();
+    const url = URL.createObjectURL(file);
+    image.onload = () => {
+      const width = image.width;
+      const height = image.height;
+      const sizeMB = Number((file.size / (1024 * 1024)).toFixed(2));
+      const noteKeys: string[] = [];
+      let status: "good" | "warn" = "good";
+
+      if (width < 900 || height < 900) {
+        status = "warn";
+        noteKeys.push("scanResolutionLow");
+      } else {
+        noteKeys.push("scanResolutionGood");
+      }
+
+      if (sizeMB > 8) {
+        status = "warn";
+        noteKeys.push("scanFileLarge");
+      } else {
+        noteKeys.push("scanFileGood");
+      }
+
+      if (Math.min(width, height) / Math.max(width, height) < 0.55) {
+        status = "warn";
+        noteKeys.push("scanRatioWarn");
+      } else {
+        noteKeys.push("scanRatioGood");
+      }
+
+      URL.revokeObjectURL(url);
+      resolve({ width, height, sizeMB, status, noteKeys });
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve({
+        width: 0,
+        height: 0,
+        sizeMB: Number((file.size / (1024 * 1024)).toFixed(2)),
+        status: "warn",
+        noteKeys: ["scanFailed"],
+      });
+    };
+    image.src = url;
+  });
+}
+
 export default function EditPage() {
   const { t } = useLocale();
   const { data: session, status: authStatus } = useSession();
   const [loginOpen, setLoginOpen] = useState(false);
-  const [queue, setQueue] = useState<QueueItem[]>([]);
-  const [selectedFunction, setSelectedFunction] = useState<GenType | null>(null);
-  const [batchMode, setBatchMode] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [sourceFile, setSourceFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [scanResult, setScanResult] = useState<ScanResult | null>(null);
+  const [packageType, setPackageType] = useState<PackageType>("bundle");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [assets, setAssets] = useState<DeliveryAsset[]>([]);
 
-  const handleFiles = useCallback((files: File[]) => {
-    const items: QueueItem[] = files.map((file) => ({
-      id: `${Date.now()}_${Math.random().toString(36).slice(2)}`,
-      file,
-      preview: URL.createObjectURL(file),
-      status: "pending" as const,
-    }));
-    setQueue((prev) => (batchMode ? [...prev, ...items] : items));
-  }, [batchMode]);
+  const packageAssets = useMemo<DeliveryAsset[]>(() => {
+    if (packageType === "basic") {
+      return [{ id: "portrait", labelKey: "portrait", genType: "portrait", status: "pending" }];
+    }
+    return [
+      { id: "portrait", labelKey: "portrait", genType: "portrait", status: "pending" },
+      { id: "poster", labelKey: "poster", genType: "poster", status: "pending" },
+      { id: "card", labelKey: "card", genType: "background", status: "pending" },
+    ];
+  }, [packageType]);
 
-  const removeFromQueue = (id: string) => {
-    setQueue((prev) => prev.filter((item) => item.id !== id));
-  };
+  const handleFiles = useCallback(async (files: File[]) => {
+    const file = files[0];
+    if (!file) return;
+    const preview = URL.createObjectURL(file);
+    setSourceFile(file);
+    setPreviewUrl(preview);
+    setAssets([]);
+    setCurrentStep(2);
+    const scan = await scanImage(file);
+    setScanResult(scan);
+    setCurrentStep(3);
+  }, []);
 
-  const handleGenerate = async () => {
-    if (!session) { setLoginOpen(true); return; }
-    if (!selectedFunction || queue.length === 0) return;
+  const handleGenerateBundle = async () => {
+    if (!session) {
+      setLoginOpen(true);
+      return;
+    }
+    if (!sourceFile) return;
 
     setIsGenerating(true);
+    setCurrentStep(4);
+    setAssets(packageAssets);
 
-    for (let i = 0; i < queue.length; i++) {
-      const item = queue[i];
-      if (item.status === "done") continue;
-
-      setQueue((prev) =>
-        prev.map((q) => (q.id === item.id ? { ...q, status: "processing" } : q))
+    const base64 = await fileToBase64(sourceFile);
+    for (const asset of packageAssets) {
+      setAssets((prev) =>
+        prev.map((a) => (a.id === asset.id ? { ...a, status: "processing" } : a))
       );
-
       try {
-        const base64 = await fileToBase64(item.file);
         const res = await fetch("/api/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             imageBase64: base64,
-            mimeType: item.file.type || "image/jpeg",
-            genType: selectedFunction,
+            mimeType: sourceFile.type || "image/jpeg",
+            genType: asset.genType,
           }),
         });
-
         const data = await res.json();
-
         if (data.success && data.imageBase64) {
-          setQueue((prev) =>
-            prev.map((q) =>
-              q.id === item.id
-                ? { ...q, status: "done", resultBase64: data.imageBase64, resultMime: data.imageMimeType }
-                : q
+          setAssets((prev) =>
+            prev.map((a) =>
+              a.id === asset.id
+                ? {
+                    ...a,
+                    status: "done",
+                    resultBase64: data.imageBase64,
+                    resultMime: data.imageMimeType || "image/png",
+                  }
+                : a
             )
           );
         } else {
-          setQueue((prev) =>
-            prev.map((q) =>
-              q.id === item.id
-                ? { ...q, status: "error", error: data.error || "Failed" }
-                : q
+          setAssets((prev) =>
+            prev.map((a) =>
+              a.id === asset.id ? { ...a, status: "error", error: data.error || "Failed" } : a
             )
           );
         }
       } catch (err) {
-        setQueue((prev) =>
-          prev.map((q) =>
-            q.id === item.id
-              ? { ...q, status: "error", error: (err as Error).message }
-              : q
+        setAssets((prev) =>
+          prev.map((a) =>
+            a.id === asset.id ? { ...a, status: "error", error: (err as Error).message } : a
           )
         );
       }
     }
-
     setIsGenerating(false);
   };
 
-  const handleDownload = (item: QueueItem) => {
-    if (!item.resultBase64) return;
+  const handleDownload = (asset: DeliveryAsset) => {
+    if (!asset.resultBase64) return;
     const link = document.createElement("a");
-    link.href = `data:${item.resultMime || "image/png"};base64,${item.resultBase64}`;
-    link.download = `memorial-${item.id}.${item.resultMime?.includes("png") ? "png" : "jpg"}`;
+    const mime = asset.resultMime || "image/png";
+    const ext = mime.includes("png") ? "png" : "jpg";
+    link.href = `data:${mime};base64,${asset.resultBase64}`;
+    link.download = `memorial-${asset.labelKey}.${ext}`;
     link.click();
   };
 
-  const doneItem = queue.find((q) => q.status === "done");
+  const handleDownloadAll = async () => {
+    const doneAssets = assets.filter((a) => a.status === "done");
+    doneAssets.forEach((asset, idx) => {
+      window.setTimeout(() => handleDownload(asset), idx * 280);
+    });
+  };
+
+  const doneCount = assets.filter((a) => a.status === "done").length;
 
   return (
     <>
       <div className="py-12 sm:py-16">
-        <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
-          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-white mb-8">
-            {t("edit.title")}
-          </h1>
+        <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-white mb-8">{t("edit.title")}</h1>
 
           {authStatus === "unauthenticated" && (
             <div className="mb-8 p-4 rounded-xl bg-slate-900 border border-slate-700 text-center">
@@ -141,115 +217,212 @@ export default function EditPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Left: Upload + Settings */}
-            <div className="space-y-6">
-              <UploadZone onFiles={handleFiles} multiple={batchMode} />
+          {/* Step tracker */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+            {steps.map((step) => (
+              <div
+                key={step.id}
+                className={`rounded-xl border p-3 ${currentStep >= step.id ? "border-gold/50 bg-gold/10" : "border-slate-800 bg-slate-900/40"}`}
+              >
+                <p className={`text-xs ${currentStep >= step.id ? "text-gold" : "text-slate-500"}`}>{t("edit.wizard.stepLabel")} {step.id}</p>
+                <p className={`text-sm font-medium ${currentStep >= step.id ? "text-white" : "text-slate-400"}`}>{t(`edit.wizard.step${step.id}`)}</p>
+              </div>
+            ))}
+          </div>
 
-              {/* Batch mode toggle */}
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" checked={batchMode} onChange={(e) => setBatchMode(e.target.checked)} className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-gold focus:ring-gold/50" />
-                <span className="text-sm text-slate-400">{t("edit.batchMode")}</span>
-              </label>
+          <div className="space-y-8">
+            {/* Step 1 */}
+            <section className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 sm:p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-serif text-xl text-white">{t("edit.wizard.step1Title")}</h2>
+                {currentStep > 1 ? <CheckCircle2 className="w-5 h-5 text-green-400" /> : null}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+                  <p className="text-sm font-medium text-white mb-1">{t("edit.wizard.faceTitle")}</p>
+                  <p className="text-xs text-slate-400">{t("edit.wizard.faceDesc")}</p>
+                </div>
+                <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+                  <p className="text-sm font-medium text-white mb-1">{t("edit.wizard.lightingTitle")}</p>
+                  <p className="text-xs text-slate-400">{t("edit.wizard.lightingDesc")}</p>
+                </div>
+                <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+                  <p className="text-sm font-medium text-white mb-1">{t("edit.wizard.qualityTitle")}</p>
+                  <p className="text-xs text-slate-400">{t("edit.wizard.qualityDesc")}</p>
+                </div>
+              </div>
+              {currentStep === 1 && (
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(2)}
+                  className="mt-5 inline-flex items-center gap-2 bg-gold hover:bg-gold-light text-slate-950 font-semibold px-5 py-2.5 rounded-lg text-sm"
+                >
+                  {t("edit.wizard.continueUpload")}
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
+            </section>
 
-              {/* Queue preview */}
-              {queue.length > 0 && (
-                <div className="space-y-3">
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                    {queue.map((item) => (
-                      <div key={item.id} className="relative aspect-square rounded-xl overflow-hidden border border-slate-700 bg-slate-800">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={item.preview} alt="" className="w-full h-full object-cover" />
-                        {item.status === "processing" && (
-                          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                            <Loader2 className="w-6 h-6 animate-spin text-gold" />
-                          </div>
-                        )}
-                        {item.status === "done" && (
-                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                            <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
-                              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                            </div>
-                          </div>
-                        )}
-                        {item.status === "error" && (
-                          <div className="absolute inset-0 bg-red-900/40 flex items-center justify-center">
-                            <X className="w-6 h-6 text-red-400" />
-                          </div>
-                        )}
-                        <button type="button" onClick={() => removeFromQueue(item.id)} className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 flex items-center justify-center text-white/80 hover:text-white">
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ))}
-                    {batchMode && (
-                      <button type="button" onClick={() => document.querySelector<HTMLInputElement>("input[type=file]")?.click()} className="aspect-square rounded-xl border-2 border-dashed border-slate-700 flex items-center justify-center text-slate-500 hover:text-slate-400 hover:border-slate-500 transition-colors">
-                        <Plus className="w-6 h-6" />
-                      </button>
-                    )}
+            {/* Step 2 */}
+            <section className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 sm:p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-serif text-xl text-white">{t("edit.wizard.step2Title")}</h2>
+                {scanResult ? <CheckCircle2 className="w-5 h-5 text-green-400" /> : null}
+              </div>
+              <UploadZone onFiles={handleFiles} multiple={false} />
+              {sourceFile && scanResult && (
+                <div className="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div className="rounded-xl overflow-hidden border border-slate-800 bg-slate-950/60">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={previewUrl} alt={t("edit.wizard.uploadedAlt")} className="w-full object-cover max-h-72" />
+                  </div>
+                  <div className={`rounded-xl border p-4 ${scanResult.status === "good" ? "border-green-500/30 bg-green-900/10" : "border-amber-500/30 bg-amber-900/10"}`}>
+                    <p className="text-sm font-semibold text-white mb-2">{t("edit.wizard.autoScanReport")}</p>
+                    <p className="text-xs text-slate-400 mb-3">
+                      {scanResult.width}×{scanResult.height}px · {scanResult.sizeMB}MB
+                    </p>
+                    <ul className="space-y-2">
+                      {scanResult.noteKeys.map((noteKey) => (
+                        <li key={noteKey} className="text-xs text-slate-300 flex items-start gap-2">
+                          <span className="mt-0.5 text-gold">•</span>
+                          <span>{t(`edit.wizard.${noteKey}`)}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               )}
+            </section>
 
-              <FunctionSelector selected={selectedFunction} onSelect={setSelectedFunction} />
-
+            {/* Step 3 */}
+            <section className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 sm:p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-serif text-xl text-white">{t("edit.wizard.step3Title")}</h2>
+                {currentStep > 3 ? <CheckCircle2 className="w-5 h-5 text-green-400" /> : null}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setPackageType("basic")}
+                  className={`text-left rounded-xl border p-4 transition-all ${packageType === "basic" ? "border-gold bg-gold/10" : "border-slate-800 bg-slate-950/60 hover:border-slate-700"}`}
+                >
+                  <p className="text-sm font-semibold text-white">{t("edit.wizard.basicTitle")}</p>
+                  <p className="text-xs text-slate-400 mt-1">{t("edit.wizard.basicDesc")}</p>
+                  <div className="mt-3 text-xs text-slate-300 space-y-1">
+                    <p>• {t("edit.wizard.basicF1")}</p>
+                    <p>• {t("edit.wizard.basicF2")}</p>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPackageType("bundle")}
+                  className={`relative text-left rounded-xl border p-4 transition-all ${packageType === "bundle" ? "border-gold bg-gold/10" : "border-slate-800 bg-slate-950/60 hover:border-slate-700"}`}
+                >
+                  <span className="absolute top-3 right-3 text-[10px] bg-gold text-slate-950 px-2 py-0.5 rounded-full font-bold">{t("edit.wizard.recommended")}</span>
+                  <p className="text-sm font-semibold text-white">{t("edit.wizard.bundleTitle")}</p>
+                  <p className="text-xs text-slate-400 mt-1">{t("edit.wizard.bundleDesc")}</p>
+                  <div className="mt-3 text-xs text-slate-300 space-y-1">
+                    <p>• {t("edit.wizard.bundleF1")}</p>
+                    <p>• {t("edit.wizard.bundleF2")}</p>
+                    <p>• {t("edit.wizard.bundleF3")}</p>
+                  </div>
+                </button>
+              </div>
               <button
                 type="button"
-                onClick={handleGenerate}
-                disabled={isGenerating || !selectedFunction || queue.length === 0}
-                className="w-full flex items-center justify-center gap-2 bg-gold hover:bg-gold-light disabled:bg-slate-700 disabled:text-slate-500 text-slate-950 font-semibold py-4 rounded-xl transition-colors text-lg"
+                onClick={handleGenerateBundle}
+                disabled={!sourceFile || isGenerating}
+                className="mt-5 w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gold hover:bg-gold-light disabled:bg-slate-700 disabled:text-slate-500 text-slate-950 font-semibold px-6 py-3 rounded-xl transition-colors"
               >
                 {isGenerating ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" />
                     {t("edit.generating")}
                   </>
                 ) : (
                   <>
-                    {t("edit.generate")}
-                    <ArrowRight className="w-5 h-5" />
+                    {t("edit.wizard.generateDeliverables")}
+                    <Sparkles className="w-4 h-4" />
                   </>
                 )}
               </button>
-            </div>
+            </section>
 
-            {/* Right: Results */}
-            <div className="space-y-6">
-              {queue.filter((q) => q.status === "done").length > 0 ? (
-                <div className="space-y-6">
-                  <h3 className="text-sm font-medium text-slate-400">{t("edit.result")}</h3>
-                  {queue.filter((q) => q.status === "done").map((item) => (
-                    <div key={item.id} className="space-y-4">
-                      <div className="rounded-2xl overflow-hidden border border-slate-700 bg-slate-900">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={`data:${item.resultMime};base64,${item.resultBase64}`}
-                          alt="Result"
-                          className="w-full"
-                        />
-                      </div>
-                      <div className="flex gap-3">
-                        <button type="button" onClick={() => handleDownload(item)} className="flex-1 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-xl text-sm font-medium transition-colors border border-slate-700">
-                          <Download className="w-4 h-4" />
-                          {t("edit.download")}
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                  {doneItem?.resultBase64 && doneItem.resultMime && (
-                    <PrintSizes imageBase64={doneItem.resultBase64} imageMimeType={doneItem.resultMime} />
-                  )}
+            {/* Step 4 */}
+            <section className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 sm:p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-serif text-xl text-white">{t("edit.wizard.step4Title")}</h2>
+                {doneCount > 0 ? <CheckCircle2 className="w-5 h-5 text-green-400" /> : null}
+              </div>
+
+              {assets.length === 0 ? (
+                <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-8 text-center">
+                  <UploadCloud className="w-8 h-8 text-slate-600 mx-auto mb-3" />
+                  <p className="text-sm text-slate-500">{t("edit.wizard.galleryEmpty")}</p>
                 </div>
               ) : (
-                <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-12 text-center">
-                  <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center mx-auto mb-4">
-                    <Download className="w-8 h-8 text-slate-600" />
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {assets.map((asset) => (
+                      <div key={asset.id} className="rounded-xl border border-slate-800 bg-slate-950/70 overflow-hidden">
+                        <div className="aspect-[4/5] bg-slate-900 flex items-center justify-center relative">
+                          {asset.status === "done" && asset.resultBase64 ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={`data:${asset.resultMime};base64,${asset.resultBase64}`} alt={t(`edit.wizard.asset${asset.labelKey.charAt(0).toUpperCase()}${asset.labelKey.slice(1)}`)} className="w-full h-full object-cover" />
+                          ) : asset.status === "processing" ? (
+                            <Loader2 className="w-7 h-7 animate-spin text-gold" />
+                          ) : asset.status === "error" ? (
+                            <p className="text-xs text-red-400 px-4 text-center">{asset.error || t("edit.wizard.generationFailed")}</p>
+                          ) : (
+                            <p className="text-xs text-slate-600">{t("edit.wizard.queued")}</p>
+                          )}
+                        </div>
+                        <div className="p-3 border-t border-slate-800">
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm font-medium text-white">{t(`edit.wizard.asset${asset.labelKey.charAt(0).toUpperCase()}${asset.labelKey.slice(1)}`)}</p>
+                            <span className="text-[10px] text-slate-500 uppercase">
+                              {t(
+                                asset.status === "pending"
+                                  ? "edit.wizard.statusPending"
+                                  : asset.status === "processing"
+                                    ? "edit.wizard.statusProcessing"
+                                    : asset.status === "done"
+                                      ? "edit.wizard.statusDone"
+                                      : "edit.wizard.statusError"
+                              )}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleDownload(asset)}
+                            disabled={asset.status !== "done"}
+                            className="mt-3 w-full inline-flex items-center justify-center gap-2 border border-slate-700 hover:border-gold/50 disabled:opacity-50 disabled:hover:border-slate-700 text-slate-200 py-2 rounded-lg text-xs"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            {t("edit.download")}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <p className="text-slate-500 text-sm">{t("edit.result")}</p>
-                  <p className="text-slate-600 text-xs mt-1">Upload a photo and select a function to get started</p>
-                </div>
+
+                  <div className="mt-5 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+                    <p className="text-sm text-slate-400">
+                      {t("edit.wizard.delivered")} {doneCount}/{assets.length}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleDownloadAll}
+                      disabled={doneCount === 0}
+                      className="inline-flex items-center justify-center gap-2 bg-gold hover:bg-gold-light disabled:bg-slate-700 disabled:text-slate-500 text-slate-950 font-semibold px-5 py-2.5 rounded-lg text-sm"
+                    >
+                      <Shield className="w-4 h-4" />
+                      {t("edit.wizard.downloadAll")}
+                    </button>
+                  </div>
+                </>
               )}
-            </div>
+            </section>
           </div>
         </div>
       </div>

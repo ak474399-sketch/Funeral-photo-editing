@@ -51,6 +51,56 @@ export type TranslationKeys = {
     addMore: string;
     processing: string;
     printSizes: string;
+    wizard: {
+      stepLabel: string;
+      step1: string;
+      step2: string;
+      step3: string;
+      step4: string;
+      step1Title: string;
+      step2Title: string;
+      step3Title: string;
+      step4Title: string;
+      faceTitle: string;
+      faceDesc: string;
+      lightingTitle: string;
+      lightingDesc: string;
+      qualityTitle: string;
+      qualityDesc: string;
+      continueUpload: string;
+      uploadedAlt: string;
+      autoScanReport: string;
+      scanResolutionLow: string;
+      scanResolutionGood: string;
+      scanFileLarge: string;
+      scanFileGood: string;
+      scanRatioWarn: string;
+      scanRatioGood: string;
+      scanFailed: string;
+      basicTitle: string;
+      basicDesc: string;
+      basicF1: string;
+      basicF2: string;
+      bundleTitle: string;
+      bundleDesc: string;
+      bundleF1: string;
+      bundleF2: string;
+      bundleF3: string;
+      recommended: string;
+      generateDeliverables: string;
+      galleryEmpty: string;
+      assetPortrait: string;
+      assetPoster: string;
+      assetCard: string;
+      generationFailed: string;
+      queued: string;
+      delivered: string;
+      downloadAll: string;
+      statusPending: string;
+      statusProcessing: string;
+      statusDone: string;
+      statusError: string;
+    };
   };
   gallery: {
     title: string;
@@ -176,6 +226,56 @@ const en: TranslationKeys = {
     addMore: "Add More Photos",
     processing: "Processing",
     printSizes: "Print Sizes",
+    wizard: {
+      stepLabel: "Step",
+      step1: "Image Pre-check",
+      step2: "Upload & Auto-scan",
+      step3: "Package Selection",
+      step4: "Delivery Gallery",
+      step1Title: "Step 1 — Image Pre-check Guidelines",
+      step2Title: "Step 2 — Upload and Auto-scan",
+      step3Title: "Step 3 — Package Selection",
+      step4Title: "Step 4 — Unified Delivery Gallery",
+      faceTitle: "Face Visibility",
+      faceDesc: "Use photos with clear face details and minimal occlusion.",
+      lightingTitle: "Lighting & Focus",
+      lightingDesc: "Avoid severe blur and harsh backlight for best restoration quality.",
+      qualityTitle: "Minimum Quality",
+      qualityDesc: "Recommended 1200px+ on shorter side, JPG/PNG under 10MB.",
+      continueUpload: "Continue to Upload",
+      uploadedAlt: "Uploaded source",
+      autoScanReport: "Auto-scan Report",
+      scanResolutionLow: "Resolution is low. Recommended 1200px+ on the shortest side.",
+      scanResolutionGood: "Resolution looks suitable for high-quality restoration.",
+      scanFileLarge: "File is large. Processing may be slower.",
+      scanFileGood: "File size is within optimal range.",
+      scanRatioWarn: "Aspect ratio is very wide/narrow. Portrait crop may be needed.",
+      scanRatioGood: "Aspect ratio is acceptable for memorial portrait output.",
+      scanFailed: "Unable to inspect image metadata. Please try another file.",
+      basicTitle: "Basic Package",
+      basicDesc: "Portrait-focused restoration delivery.",
+      basicF1: "Dignified Portrait",
+      basicF2: "Formal attire + studio background",
+      bundleTitle: "Full Bundle",
+      bundleDesc: "Complete memorial delivery set.",
+      bundleF1: "Portrait",
+      bundleF2: "Poster",
+      bundleF3: "Memorial Card (Social-ready)",
+      recommended: "Recommended",
+      generateDeliverables: "Generate Deliverables",
+      galleryEmpty: "Your generated portrait/poster/card will appear here in a professional delivery grid.",
+      assetPortrait: "Portrait",
+      assetPoster: "Poster",
+      assetCard: "Card",
+      generationFailed: "Generation failed",
+      queued: "Queued...",
+      delivered: "Delivered",
+      downloadAll: "Download All (Bundle)",
+      statusPending: "Pending",
+      statusProcessing: "Processing",
+      statusDone: "Delivered",
+      statusError: "Failed",
+    },
   },
   gallery: {
     title: "My Gallery",
@@ -307,6 +407,56 @@ const ja: TranslationKeys = {
     addMore: "写真を追加",
     processing: "処理中",
     printSizes: "印刷サイズ",
+    wizard: {
+      stepLabel: "ステップ",
+      step1: "画像事前チェック",
+      step2: "アップロードと自動スキャン",
+      step3: "パッケージ選択",
+      step4: "納品ギャラリー",
+      step1Title: "ステップ1 — 画像事前チェックガイド",
+      step2Title: "ステップ2 — アップロードと自動スキャン",
+      step3Title: "ステップ3 — パッケージ選択",
+      step4Title: "ステップ4 — 統合納品ギャラリー",
+      faceTitle: "顔の視認性",
+      faceDesc: "顔がはっきり見える写真を使用してください。",
+      lightingTitle: "明るさとピント",
+      lightingDesc: "強い逆光や大きなブレは避けてください。",
+      qualityTitle: "推奨品質",
+      qualityDesc: "短辺1200px以上、JPG/PNG、10MB以下を推奨。",
+      continueUpload: "アップロードへ進む",
+      uploadedAlt: "アップロード画像",
+      autoScanReport: "自動スキャン結果",
+      scanResolutionLow: "解像度が低めです。短辺1200px以上を推奨します。",
+      scanResolutionGood: "解像度は高品質処理に適しています。",
+      scanFileLarge: "ファイルサイズが大きめです。処理に時間がかかる場合があります。",
+      scanFileGood: "ファイルサイズは適切です。",
+      scanRatioWarn: "縦横比が極端です。ポートレート用にトリミングされる可能性があります。",
+      scanRatioGood: "縦横比は遺影出力に適しています。",
+      scanFailed: "画像情報を解析できませんでした。別の画像をお試しください。",
+      basicTitle: "ベーシックパッケージ",
+      basicDesc: "遺影ポートレート中心の納品。",
+      basicF1: "格式ある遺影ポートレート",
+      basicF2: "正装 + スタジオ背景",
+      bundleTitle: "フルバンドル",
+      bundleDesc: "追悼に必要な完全納品セット。",
+      bundleF1: "ポートレート",
+      bundleF2: "ポスター",
+      bundleF3: "メモリアルカード（SNS向け）",
+      recommended: "おすすめ",
+      generateDeliverables: "納品物を生成",
+      galleryEmpty: "生成されたポートレート／ポスター／カードがここに表示されます。",
+      assetPortrait: "ポートレート",
+      assetPoster: "ポスター",
+      assetCard: "カード",
+      generationFailed: "生成に失敗しました",
+      queued: "待機中...",
+      delivered: "納品済み",
+      downloadAll: "すべてダウンロード（バンドル）",
+      statusPending: "待機中",
+      statusProcessing: "処理中",
+      statusDone: "納品済み",
+      statusError: "失敗",
+    },
   },
   gallery: {
     title: "マイギャラリー",
@@ -438,6 +588,56 @@ const zhTW: TranslationKeys = {
     addMore: "新增更多照片",
     processing: "處理中",
     printSizes: "列印尺寸",
+    wizard: {
+      stepLabel: "步驟",
+      step1: "圖片預檢",
+      step2: "上傳與自動掃描",
+      step3: "方案選擇",
+      step4: "交付圖庫",
+      step1Title: "步驟 1 — 圖片預檢指引",
+      step2Title: "步驟 2 — 上傳與自動掃描",
+      step3Title: "步驟 3 — 方案選擇",
+      step4Title: "步驟 4 — 統一交付圖庫",
+      faceTitle: "臉部清晰度",
+      faceDesc: "請使用臉部清楚、遮擋較少的照片。",
+      lightingTitle: "光線與對焦",
+      lightingDesc: "避免嚴重模糊與強烈逆光。",
+      qualityTitle: "最低建議品質",
+      qualityDesc: "建議短邊 1200px 以上，JPG/PNG 且小於 10MB。",
+      continueUpload: "繼續上傳",
+      uploadedAlt: "已上傳來源圖",
+      autoScanReport: "自動掃描報告",
+      scanResolutionLow: "解析度偏低，建議短邊至少 1200px。",
+      scanResolutionGood: "解析度適合高品質修復。",
+      scanFileLarge: "檔案較大，處理時間可能較長。",
+      scanFileGood: "檔案大小在最佳範圍內。",
+      scanRatioWarn: "長寬比偏極端，可能需要人像裁切。",
+      scanRatioGood: "長寬比適合遺照輸出。",
+      scanFailed: "無法分析圖片資訊，請嘗試其他檔案。",
+      basicTitle: "基礎方案",
+      basicDesc: "以遺照肖像為主的交付。",
+      basicF1: "莊嚴遺照肖像",
+      basicF2: "正裝 + 棚拍背景",
+      bundleTitle: "完整套組",
+      bundleDesc: "完整追思交付內容。",
+      bundleF1: "肖像",
+      bundleF2: "海報",
+      bundleF3: "紀念卡（社群適配）",
+      recommended: "推薦",
+      generateDeliverables: "生成交付素材",
+      galleryEmpty: "生成後的肖像／海報／卡片將在這裡以專業網格顯示。",
+      assetPortrait: "肖像",
+      assetPoster: "海報",
+      assetCard: "卡片",
+      generationFailed: "生成失敗",
+      queued: "排隊中...",
+      delivered: "已交付",
+      downloadAll: "全部下載（套組）",
+      statusPending: "待處理",
+      statusProcessing: "處理中",
+      statusDone: "已交付",
+      statusError: "失敗",
+    },
   },
   gallery: {
     title: "我的相簿",
